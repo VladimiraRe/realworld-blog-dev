@@ -1,0 +1,21 @@
+@import '../../assets/scss/vars';
+
+.contentPagination {
+    padding: 26px 0;
+    display: flex;
+    justify-content: center;
+    font-family: inherit;
+    font-weight: inherit;
+}
+.ant-pagination .ant-pagination-item-active {
+    background-color: $secondColor;
+    border-color: $secondColor;
+}
+.ant-pagination .ant-pagination-item, .ant-pagination a {
+    font-family: inherit;
+    font-weight: inherit;
+    font-size: 12px;
+}
+.ant-pagination .ant-pagination-item-active a {
+    color: $mainColor;
+}
