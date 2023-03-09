@@ -1,0 +1,29 @@
+@import '../../assets/scss/vars';
+
+.user {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 12px;
+}
+.user__wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.user__wrap > span {
+    text-align: end;
+    font-size: 0.75rem;
+    line-height: 1.375rem;
+    color: $thirdFontColor;
+}
+.user__wrap > h6 {
+    text-align: end;
+    font-size: 1.125rem;
+    line-height: 1.2rem;
+}
+.user > img {
+    width: 2.875rem;
+    height: 2.875rem;
+    object-fit: cover;
+    border-radius: 50%;
+}

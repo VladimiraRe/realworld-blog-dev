@@ -1,0 +1,25 @@
+@import '../../assets/scss/vars';
+
+.button {
+    text-transform: capitalize;
+    background-color: transparent;
+    color: $mainFontColor;
+    border: 1px solid $mainFontColor;
+    border-radius: 5px;
+    height: auto;
+    padding: 8px 18px;
+}
+.button:active:not(:disabled),
+.button:hover:not(:disabled) {
+    color: $secondColor;
+    border-color: $secondColor;
+}
+.button--accent {
+    color: $thirdColor;
+    border-color: $thirdColor;
+}
+.button--accent:active:not(:disabled),
+.button--accent:hover:not(:disabled) {
+    color: $mainColor;
+    background-color: $thirdColor;
+}

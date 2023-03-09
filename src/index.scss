@@ -1,0 +1,23 @@
+@import './assets/scss/fonts';
+@import './assets/scss/vars';
+
+html {
+    font-size: clamp(16px, 1.11vw, 22px);
+}
+
+body {
+    font-family: $mainFont;
+    font-weight: 400;
+    color: $mainFontColor;
+    background-color: $backColor;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, p, ul {
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+}
