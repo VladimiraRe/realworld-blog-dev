@@ -1,18 +1,16 @@
-import type { IArticleCard } from '../../type';
-
-import ArticleHeader from './ArticleHeader';
-import './Article.scss';
+import type { IArticleCard } from '../../../type';
+import './ArticleCard.scss';
+import ArticleHeader from '../ArticleHeader';
 
 interface IArticle {
     children?: JSX.Element;
     data: IArticleCard;
 }
 
-export default function Article({ children, data }: IArticle) {
+export default function ArticleCard({ children, data }: IArticle) {
     const { description, ...props } = data;
-
     const className = ['article'];
-    if (!children) className.push('article--clickable');
+    if (!children) className.push('article--preview');
 
     return (
         <article className={className.join(' ')}>

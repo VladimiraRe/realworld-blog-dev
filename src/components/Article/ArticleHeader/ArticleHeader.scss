@@ -1,0 +1,45 @@
+@import '../../../assets/scss/vars';
+
+.article__header h5 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: $secondColor;
+    overflow-wrap: break-word;
+    text-align: justify;
+}
+.article__header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 4px;
+    column-gap: 30px;
+
+    @media (max-width: $mobileWidth) {
+        flex-direction: column-reverse;
+        row-gap: 20px;
+    }
+}
+.article__header--preview > div {
+    max-height: 75%;
+}
+.article__header {
+    & > div, & > section {
+    flex: 1;
+    }
+}
+.article__titleWrap {
+    display: flex;
+    column-gap: 13px;
+    align-items: baseline;
+    margin-bottom: 4px;
+}
+.article__titleWrap > span {
+    display: inline-flex;
+    align-items: center;
+    column-gap: 5px;
+}
+.article__tags > span {
+    color: $thirdFontColor;
+    border-color: $thirdFontColor;
+    line-height: 1.5em;
+}

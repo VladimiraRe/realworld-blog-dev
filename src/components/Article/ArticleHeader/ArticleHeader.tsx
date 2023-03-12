@@ -1,9 +1,9 @@
 import { Tag } from 'antd';
 import { v1 as uuidv1 } from 'uuid';
 
-import type { IArticleCard } from '../../type';
-import User from '../User';
-import './Article.scss';
+import type { IArticleCard } from '../../../type';
+import User from '../../User';
+import './ArticleHeader.scss';
 
 interface IArticleHeader {
     isPage: boolean;
@@ -11,14 +11,24 @@ interface IArticleHeader {
 }
 
 export default function ArticleHeader({ isPage, data }: IArticleHeader) {
-    const maxCount = isPage ? 11 : 4;
-    const tags = data.tagList.slice(0, maxCount).map((tag) => <Tag key={uuidv1()}>{tag}</Tag>);
+    const className = ['article__header'];
+    let maxTag = 11;
+    let { title } = data;
+    if (!isPage) {
+        className.push('article__header--preview');
+        maxTag = 4;
+        title = checkLength(data.title, 30);
+    }
+
+    const tags = data.tagList.slice(0, maxTag).map((tag) => {
+        return <Tag key={uuidv1()}>{isPage ? tag : checkLength(tag, 20)}</Tag>;
+    });
 
     return (
-        <header className='article__header'>
+        <header className={className.join(' ')}>
             <div>
                 <div className='article__titleWrap'>
-                    <h5>{data.title}</h5>
+                    <h5>{title}</h5>
                     <span>
                         {createLikeIcon({ width: 16, height: 16 })}
                         <span>{data.favoritesCount}</span>
@@ -34,6 +44,10 @@ export default function ArticleHeader({ isPage, data }: IArticleHeader) {
             </User>
         </header>
     );
+}
+
+function checkLength(text: string, desiredLength: number) {
+    return text.length > desiredLength ? `${text.slice(0, desiredLength)}...` : text;
 }
 
 interface ICreateLikeIcon {

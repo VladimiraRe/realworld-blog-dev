@@ -1,0 +1,9 @@
+.article__body {
+    all: revert;
+    margin-top: 25px;
+
+    * {
+        all: revert;
+    }
+
+}
