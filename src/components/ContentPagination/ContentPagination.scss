@@ -16,6 +16,7 @@
     font-weight: inherit;
     font-size: 12px;
 }
-.ant-pagination .ant-pagination-item-active a {
+.ant-pagination .ant-pagination-item-active a,
+.ant-pagination .ant-pagination-item-active:hover a {
     color: $mainColor;
 }
