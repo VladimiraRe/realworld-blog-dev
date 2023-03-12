@@ -1,8 +1,10 @@
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import './App.scss';
 import Header from '../AppHeader';
-import ArticlesPage from '../../pages/ArticlesPage';
+import ListOfArticles from '../../pages/ListOfArticlesPage';
+import FullArticle from '../Article/FullArticle';
+import Error, { errorMessage, errorType } from '../Error';
 
 export default function App() {
     return (
@@ -10,7 +12,13 @@ export default function App() {
             <Header />
             <div className='app__container'>
                 <BrowserRouter>
-                    <Route path={['/', '/articles/:page?']} component={ArticlesPage} />
+                    <Switch>
+                        <Route path='/articles/:key/:slug' component={FullArticle} />
+                        <Route path={['/', '/articles']} component={ListOfArticles} />
+                        <Route
+                            render={() => <Error message={errorMessage.notFound.article} type={errorType.warning} />}
+                        />
+                    </Switch>
                 </BrowserRouter>
             </div>
         </div>

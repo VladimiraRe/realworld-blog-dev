@@ -1,10 +1,20 @@
-import type { actionsType, IArticles } from '../../../type';
+import type { actionsType, IListOfArticles, IArticle } from '../../../type';
 
-// eslint-disable-next-line import/prefer-default-export
-export function articles(state: IArticles = { articles: [], articlesCount: 0, offset: 0 }, action: actionsType) {
+const initial = { articles: null, articlesCount: null, offset: null };
+
+export function listOfArticles(state: IListOfArticles | typeof initial = initial, action: actionsType) {
     switch (action.type) {
-        case 'SET_ARTICLES':
-            return action.articles;
+        case 'SET_LIST_OF_ARTICLES':
+            return action.listOfArticles;
+        default:
+            return state;
+    }
+}
+
+export function article(state: IArticle | null = null, action: actionsType) {
+    switch (action.type) {
+        case 'SET_ARTICLE':
+            return action.article;
         default:
             return state;
     }

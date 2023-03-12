@@ -7,14 +7,14 @@ import * as requestsActions from './store/requests/action';
 import * as errorsActions from './store/errors/action';
 import type { errorsState } from './store/errors/reducer';
 
-type inferValuesType<T> = T extends { [key: string]: infer U } ? U : never;
+export type inferValuesType<T> = T extends { [key: string]: infer U } ? U : never;
 
 export type rootState = ReturnType<typeof reducer>;
 export type storeType = ReturnType<typeof store.getState>;
 export type appDispatch = ThunkDispatch<storeType, void, Action>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { getArticles, ...newRequestsActions } = requestsActions;
+const { getListOfArticles, getArticle, ...newRequestsActions } = requestsActions;
 
 const actions = {
     ...newRequestsActions,
@@ -43,12 +43,13 @@ export interface IArticle {
     author: IAuthor;
 }
 
-export interface IArticles {
+export interface IListOfArticles {
     articles: IArticle[];
     articlesCount: number;
     offset: number;
 }
 
-export type IArticleCard = Omit<IArticle, 'body'>;
+const omit = ['body', 'slug'] as const;
+export type IArticleCard = Omit<IArticle, (typeof omit)[number]>;
 
 export type errorsType = keyof typeof errorsState;
