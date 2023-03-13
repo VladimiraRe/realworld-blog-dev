@@ -5,6 +5,8 @@ import { v1 as uuidv1 } from 'uuid';
 import type { IArticle } from '../../type';
 import './ArticlesList.scss';
 import ArticleCard from '../Article/ArticleCard';
+import Error, { errorMessage as errorMessageObj, getErrorMessage } from '../Error';
+import type { errorMessageKeysType } from '../Error';
 
 import useArticlesList from './useArticlesList';
 
@@ -14,9 +16,16 @@ interface IArticlesList {
 }
 
 export default function ArticlesList({ page, pageSize }: IArticlesList) {
-    const data: IArticle[] | null = useArticlesList(page, pageSize);
+    const data: IArticle[] | errorMessageKeysType | null = useArticlesList(page, pageSize);
 
     if (!data) return null;
+
+    if (typeof data === 'string') {
+        const message = getErrorMessage(data, 'listOfArticles');
+        return <Error message={message as string} type='warning' />;
+    }
+
+    if (data.length === 0) return <Error message={errorMessageObj.notFoundError.listOfArticles} type='warning' />;
 
     const articlesItems = data.map(({ slug, ...article }) => {
         let { createdAt } = article;

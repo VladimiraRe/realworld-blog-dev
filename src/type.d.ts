@@ -4,7 +4,6 @@ import type { Action } from 'redux';
 import type reducer from './store/reducer';
 import type store from './store';
 import * as requestsActions from './store/requests/action';
-import * as errorsActions from './store/errors/action';
 import type { errorsState } from './store/errors/reducer';
 
 export type inferValuesType<T> = T extends { [key: string]: infer U } ? U : never;
@@ -18,7 +17,6 @@ const { getListOfArticles, getArticle, ...newRequestsActions } = requestsActions
 
 const actions = {
     ...newRequestsActions,
-    ...errorsActions,
 };
 
 export type actionsType = ReturnType<inferValuesType<typeof actions>>;
@@ -43,10 +41,16 @@ export interface IArticle {
     author: IAuthor;
 }
 
+export interface IStateArticle {
+    article: IArticle | null;
+    hasError: string | null;
+}
+
 export interface IListOfArticles {
-    articles: IArticle[];
-    articlesCount: number;
-    offset: number;
+    articles: IArticle[] | null;
+    articlesCount: number | null;
+    offset: number | null;
+    hasError: string | null;
 }
 
 const omit = ['body', 'slug'] as const;

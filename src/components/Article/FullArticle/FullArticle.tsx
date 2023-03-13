@@ -8,11 +8,11 @@ import type { storeType, appDispatch } from '../../../type';
 import { getArticle } from '../../../store/requests/action';
 import ArticleCard from '../ArticleCard';
 import Loading from '../../Loading';
-import Error, { errorMessage, errorType } from '../../Error';
+import Error, { errorMessage, errorType, getErrorMessage } from '../../Error';
 import './FullArticle.scss';
 
 export default function FullArticle() {
-    const article = useSelector((state: storeType) => state.article);
+    const { article, hasError } = useSelector((state: storeType) => state.article);
     const isLoading = useSelector((state: storeType) => state.isLoading);
     const dispatch: appDispatch = useDispatch();
 
@@ -24,12 +24,17 @@ export default function FullArticle() {
             dispatch(getArticle(linkSlug));
     }, [article, dispatch, history]);
 
+    if (hasError) {
+        const message = getErrorMessage(hasError, 'article');
+        return <Error message={message as string} type='warning' />;
+    }
+
     if (isLoading) return <Loading />;
 
     if (!article) return null;
 
     if (Object.keys(article).length === 0)
-        return <Error message={errorMessage.notFound.article} type={errorType.warning} />;
+        return <Error message={errorMessage.notFoundError.article} type={errorType.warning} />;
 
     const { body, ...data } = article;
 

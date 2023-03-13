@@ -1,12 +1,13 @@
 import { Alert } from 'antd';
 
-import type { inferValuesType } from '../../type';
-
 export const errorMessage = {
-    notFound: {
+    notFoundError: {
         article: 'Article not found',
+        listOfArticles: 'Nothing found for your request',
         page: 'This page does not exist',
     },
+    serverError: 'Our server is down, please try again later',
+    fetchError: 'An error occurred, please contact support',
 } as const;
 
 export const errorType = {
@@ -16,8 +17,10 @@ export const errorType = {
     error: 'error',
 } as const;
 
+export type errorMessageKeysType = keyof typeof errorMessage;
+
 interface IError {
-    message: inferValuesType<typeof errorMessage.notFound>;
+    message: string;
     type: (typeof errorType)[keyof typeof errorType];
     closable?: boolean;
 }

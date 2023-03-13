@@ -1,20 +1,25 @@
-import type { actionsType, IListOfArticles, IArticle } from '../../../type';
+import type { actionsType, IListOfArticles, IStateArticle } from '../../../type';
 
-const initial = { articles: null, articlesCount: null, offset: null };
+const initialListOfArticles = { articles: null, articlesCount: null, offset: null, hasError: null };
+const initialArticle = { article: null, hasError: null };
 
-export function listOfArticles(state: IListOfArticles | typeof initial = initial, action: actionsType) {
+export function listOfArticles(state: IListOfArticles = initialListOfArticles, action: actionsType) {
     switch (action.type) {
-        case 'SET_LIST_OF_ARTICLES':
-            return action.listOfArticles;
+        case 'SET_LIST_OF_ARTICLES': {
+            const { listOfArticles: data } = action;
+            return typeof data === 'string' ? { ...initialListOfArticles, hasError: data } : data;
+        }
         default:
             return state;
     }
 }
 
-export function article(state: IArticle | null = null, action: actionsType) {
+export function article(state: IStateArticle = initialArticle, action: actionsType) {
     switch (action.type) {
-        case 'SET_ARTICLE':
-            return action.article;
+        case 'SET_ARTICLE': {
+            const { articleData: data } = action;
+            return typeof data === 'string' ? { ...initialArticle, hasError: data } : data;
+        }
         default:
             return state;
     }

@@ -12,3 +12,9 @@ export class NotFoundError extends FetchError {
         super(status, 'not found');
     }
 }
+
+export class ServerError extends FetchError {
+    constructor(status: number) {
+        super(status, 'server error');
+    }
+}

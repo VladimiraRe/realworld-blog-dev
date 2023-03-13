@@ -4,10 +4,9 @@ import thunk from 'redux-thunk';
 import reducer from './reducer';
 
 const preloadedState = {
-    listOfArticles: { articles: null, articlesCount: null, offset: null },
-    article: null,
+    listOfArticles: { articles: null, articlesCount: null, offset: null, hasError: null },
+    article: { article: null, hasError: null },
     isLoading: false,
-    errors: { fetchArticleError: 0 },
     isLoggedIn: false,
 };
 

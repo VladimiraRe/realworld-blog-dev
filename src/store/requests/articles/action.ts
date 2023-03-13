@@ -1,45 +1,43 @@
-import type { IListOfArticles, IArticle, appDispatch } from '../../../type';
+import type { ActionCreator } from 'redux';
+import { bindActionCreators } from 'redux';
+
+import type { IListOfArticles, IStateArticle, appDispatch } from '../../../type';
 import api from '../../../api/realWorldApi';
 import { setIsLoading } from '../action';
-import setError from '../../errors/action';
-import { NotFoundError } from '../../../errors/customErrors';
+import { NotFoundError, ServerError } from '../../../errors/customErrors';
 
-export const setListOfArticles = (listOfArticles: IListOfArticles) => ({
+export const setListOfArticles = (listOfArticles: IListOfArticles | 'notFoundError') => ({
     type: 'SET_LIST_OF_ARTICLES' as const,
     listOfArticles,
 });
 
-export const setArticle = (article: IArticle) => ({
+export const setArticle = (articleData: IStateArticle | 'notFoundError') => ({
     type: 'SET_ARTICLE' as const,
-    article,
+    articleData,
 });
 
 export const getListOfArticles = (offset?: number) => async (dispatch: appDispatch) => {
-    dispatch(setIsLoading(true));
-
-    try {
-        const articles = await api.getListOfArticles(offset);
-        dispatch(setListOfArticles(articles));
-    } catch {
-        dispatch(setError('fetchArticleError'));
-    } finally {
-        dispatch(setIsLoading(false));
-    }
+    await getData(() => api.getListOfArticles(offset), dispatch, setListOfArticles);
 };
 
 export const getArticle = (slug: string) => async (dispatch: appDispatch) => {
-    dispatch(setIsLoading(true));
+    await getData(() => api.getArticle(slug), dispatch, setArticle);
+};
+
+async function getData(fetch: () => Promise<unknown>, dispatch: appDispatch, setData: ActionCreator<unknown>) {
+    const dispatchAction = bindActionCreators({ setData, setIsLoading }, dispatch);
+    dispatchAction.setIsLoading(true);
 
     try {
-        const article = await api.getArticle(slug);
-        dispatch(setArticle(article));
+        const data = await fetch();
+        dispatchAction.setData(data);
     } catch (err) {
         if (err instanceof NotFoundError) {
-            dispatch(setArticle({} as IArticle));
+            dispatchAction.setData('notFoundError');
         } else {
-            dispatch(setError('fetchArticleError'));
+            dispatchAction.setData(err instanceof ServerError ? 'serverError' : 'fetchError');
         }
     } finally {
         dispatch(setIsLoading(false));
     }
-};
+}
