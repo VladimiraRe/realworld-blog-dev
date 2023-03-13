@@ -14,9 +14,9 @@ export default function App() {
                 <BrowserRouter>
                     <Switch>
                         <Route path='/articles/:key/:slug' component={FullArticle} />
-                        <Route path={['/', '/articles']} component={ListOfArticles} />
+                        <Route path={['/', '/articles', '/articles/?page=']} exact component={ListOfArticles} />
                         <Route
-                            render={() => <Error message={errorMessage.notFound.article} type={errorType.warning} />}
+                            render={() => <Error message={errorMessage.notFoundError.page} type={errorType.warning} />}
                         />
                     </Switch>
                 </BrowserRouter>
