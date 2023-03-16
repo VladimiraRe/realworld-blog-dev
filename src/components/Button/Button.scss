@@ -23,3 +23,33 @@
     color: $mainColor;
     background-color: $thirdColor;
 }
+.button--alert {
+    color: $alertColor;
+    border-color: $alertColor;
+}
+.button--alert:active:not(:disabled),
+.button--alert:hover:not(:disabled) {
+    color: $mainColor;
+    background-color: $alertColor;
+}
+.button--calm {
+    color: $secondColor;
+    border-color: $secondColor;
+}
+.button--calm:active:not(:disabled),
+.button--calm:hover:not(:disabled) {
+    color: $mainColor;
+    background-color: $secondColor;
+}
+.button--filled {
+    background-color: $secondColor;
+    color: $mainColor;
+    border-color: $secondColor;
+}
+.button--filled:active:not(:disabled),
+.button--filled:hover:not(:disabled) {
+    background-color: $secondColor;
+    color: $mainColor;
+    border-color: $secondColor;
+    opacity: 0.85;
+}

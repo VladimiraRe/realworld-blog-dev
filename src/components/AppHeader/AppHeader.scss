@@ -13,4 +13,8 @@
     height: min-content;
     text-transform: capitalize;
     cursor: pointer;
+
+    &, &:hover, &:visited:hover {
+        color: $mainFontColor;
+    }
 }
