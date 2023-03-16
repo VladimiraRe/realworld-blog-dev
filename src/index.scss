@@ -1,6 +1,10 @@
 @import './assets/scss/fonts';
 @import './assets/scss/vars';
 
+* {
+    box-sizing: border-box;
+}
+
 html {
     font-size: clamp(16px, 1.11vw, 22px);
 }
@@ -20,4 +24,13 @@ h1, h2, h3, h4, h5, h6, p, ul {
 
 li {
     list-style: none;
+}
+
+a, a:visited {
+    color: $mainFontColor;
+    text-decoration: none;
+
+    &:hover {
+        color: $secondColor;
+    }
 }

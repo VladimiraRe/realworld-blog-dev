@@ -6,8 +6,8 @@ import reducer from './reducer';
 const preloadedState = {
     listOfArticles: { articles: null, articlesCount: null, offset: null, hasError: null },
     article: { article: null, hasError: null },
+    user: { isRegistered: false, loggedIn: null },
     isLoading: false,
-    isLoggedIn: false,
 };
 
 const store = configureStore({

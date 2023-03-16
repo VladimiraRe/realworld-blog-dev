@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getListOfArticles } from '../../store/requests/action';
 import type { storeType, appDispatch } from '../../type';
-import type { errorMessageKeysType } from '../Error';
+import type { alertMessageKeysType } from '../Alert';
 
 export default function useArticlesList(page: number, pageSize: number) {
     const LIMIT = 25;
@@ -16,7 +16,7 @@ export default function useArticlesList(page: number, pageSize: number) {
         checkData(page, pageSize, LIMIT, offset, dispatch);
     }, [page, pageSize, LIMIT, offset, dispatch, hasError]);
 
-    if (hasError) return hasError as errorMessageKeysType;
+    if (hasError) return hasError as alertMessageKeysType;
 
     if (offset === null || articles === null) return null;
 

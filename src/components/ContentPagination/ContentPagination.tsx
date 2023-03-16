@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Pagination } from 'antd';
 
 import type { storeType } from '../../type';
+import { setIsLoading } from '../../store/requests/action';
 import './ContentPagination.scss';
 import Loading from '../Loading';
 
@@ -19,11 +20,19 @@ export default function ContentPagination({ pageSize, content: Content, baseLink
 
     const { articlesCount } = useSelector((state: storeType) => state.listOfArticles);
     const isLoading = useSelector((state: storeType) => state.isLoading);
+    const dispatch = useDispatch();
 
     const routerHistory = useHistory();
     const linkPage = getPageFromLink(routerHistory.location.search);
 
     const [page, setPage] = useState(linkPage || 1);
+
+    useEffect(
+        () => () => {
+            if (isLoading) dispatch(setIsLoading(false));
+        },
+        [isLoading, dispatch]
+    );
 
     if (isLoading) return <Loading />;
 

@@ -1,0 +1,7 @@
+@import '../../assets/scss/vars';
+
+.container {
+    width: clamp(calc($mobileWidth - 4rem), 100%, 938px);
+    margin: 0 auto;
+    padding: 2rem;;
+}

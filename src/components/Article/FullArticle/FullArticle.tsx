@@ -5,10 +5,10 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import type { storeType, appDispatch } from '../../../type';
-import { getArticle } from '../../../store/requests/action';
+import { getArticle, setIsLoading } from '../../../store/requests/action';
 import ArticleCard from '../ArticleCard';
 import Loading from '../../Loading';
-import Error, { errorMessage, errorType, getErrorMessage } from '../../Error';
+import Error, { alertMessage, alertType, getAlertMessage } from '../../Alert';
 import './FullArticle.scss';
 
 export default function FullArticle() {
@@ -22,10 +22,13 @@ export default function FullArticle() {
         const linkSlug = history.location.pathname.split('/').at(-1) as string;
         if (!article || (Object.keys(article).length !== 0 && article.slug !== linkSlug))
             dispatch(getArticle(linkSlug));
-    }, [article, dispatch, history]);
+        return () => {
+            if (isLoading) dispatch(setIsLoading(false));
+        };
+    }, [article, dispatch, history, isLoading]);
 
     if (hasError) {
-        const message = getErrorMessage(hasError, 'article');
+        const message = getAlertMessage(hasError, 'article');
         return <Error message={message as string} type='warning' />;
     }
 
@@ -34,7 +37,7 @@ export default function FullArticle() {
     if (!article) return null;
 
     if (Object.keys(article).length === 0)
-        return <Error message={errorMessage.notFoundError.article} type={errorType.warning} />;
+        return <Error message={alertMessage.notFoundError.article} type={alertType.warning} />;
 
     const { body, ...data } = article;
 

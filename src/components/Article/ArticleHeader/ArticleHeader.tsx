@@ -2,7 +2,7 @@ import { Tag } from 'antd';
 import { v1 as uuidv1 } from 'uuid';
 
 import type { IArticleCard } from '../../../type';
-import User from '../../User';
+import Author from '../../Author';
 import './ArticleHeader.scss';
 
 interface IArticleHeader {
@@ -39,9 +39,9 @@ export default function ArticleHeader({ isPage, data }: IArticleHeader) {
                     {data.tagList.length > 5 && <span>...</span>}
                 </div>
             </div>
-            <User data={data.author}>
+            <Author data={data.author}>
                 <span>{data.createdAt}</span>
-            </User>
+            </Author>
         </header>
     );
 }

@@ -1,34 +1,18 @@
-import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
-import type { IAuthor } from '../../type';
+import type { storeType } from '../../type';
+
+import LoggedIn from './LoggedIn';
+import NotLoggedIn from './NotLoggedIn';
 import './User.scss';
-import avatar from '../../assets/images/avatar.svg';
 
-interface IUser {
-    children?: JSX.Element;
-    data: IAuthor;
-}
+export default function User() {
+    const { loggedIn } = useSelector((state: storeType) => state.user);
+    const className = ['user'];
+    if (loggedIn) className.push('user--loggedIn');
 
-export default function User({ children, data }: IUser) {
-    const BASE_IMAGE = avatar;
+    let content = <NotLoggedIn />;
+    if (loggedIn) content = <LoggedIn loggedIn={loggedIn} />;
 
-    const [image, setImage] = useState(data.image);
-
-    const name = <h6>{data.username}</h6>;
-
-    const info = children ? (
-        <div className='user__wrap'>
-            {name}
-            {children}
-        </div>
-    ) : (
-        name
-    );
-
-    return (
-        <section className='user'>
-            {info}
-            <img src={image} onError={() => setImage(BASE_IMAGE)} alt='User avatar' />
-        </section>
-    );
+    return <div className={className.join(' ')}>{content}</div>;
 }

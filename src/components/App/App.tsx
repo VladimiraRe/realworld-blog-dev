@@ -1,26 +1,42 @@
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
-import './App.scss';
+import type { storeType } from '../../type';
+import Container from '../../containers/Container';
 import Header from '../AppHeader';
 import ListOfArticles from '../../pages/ListOfArticlesPage';
 import FullArticle from '../Article/FullArticle';
-import Error, { errorMessage, errorType } from '../Error';
+import RegistrationPage from '../../pages/RegistrationPage';
+import LoginPage from '../../pages/LoginPage';
+import EditProfilePage from '../../pages/EditProfilePage';
+import Alert, { alertMessage, alertType } from '../Alert';
 
 export default function App() {
+    const { loggedIn } = useSelector((state: storeType) => state.user);
+
     return (
         <div className='app'>
-            <Header />
-            <div className='app__container'>
-                <BrowserRouter>
-                    <Switch>
-                        <Route path='/articles/:key/:slug' component={FullArticle} />
-                        <Route path={['/', '/articles', '/articles/?page=']} exact component={ListOfArticles} />
-                        <Route
-                            render={() => <Error message={errorMessage.notFoundError.page} type={errorType.warning} />}
-                        />
-                    </Switch>
-                </BrowserRouter>
-            </div>
+            <BrowserRouter>
+                <Header />
+                <Switch>
+                    <Route path='/sign-in' exact render={() => (loggedIn ? <Redirect to='/' /> : <LoginPage />)} />
+                    <Route
+                        path='/profile'
+                        exact
+                        render={() => (loggedIn ? <EditProfilePage /> : <Redirect to='/sign-in' />)}
+                    />
+                    <Route path='/sign-up' exact component={RegistrationPage} />
+                    <Route path='/articles/:key/:slug' render={() => <Container component={<FullArticle />} />} />
+                    <Route
+                        path={['/', '/articles', '/articles/?page=']}
+                        exact
+                        render={() => <Container component={<ListOfArticles />} />}
+                    />
+                    <Route
+                        render={() => <Alert message={alertMessage.notFoundError.page} type={alertType.warning} />}
+                    />
+                </Switch>
+            </BrowserRouter>
         </div>
     );
 }

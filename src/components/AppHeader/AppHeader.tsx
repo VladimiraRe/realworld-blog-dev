@@ -1,11 +1,15 @@
+import { Link } from 'react-router-dom';
+
 import './AppHeader.scss';
-import Login from '../Login';
+import User from '../User';
 
 export default function AppHeader() {
     return (
         <header className='appHeader'>
-            <span className='appHeader__logo'>Realworld Blog</span>
-            <Login />
+            <Link to='/' className='appHeader__logo'>
+                realworld blog
+            </Link>
+            <User />
         </header>
     );
 }

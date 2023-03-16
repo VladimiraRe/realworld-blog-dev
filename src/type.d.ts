@@ -1,5 +1,7 @@
 import type { ThunkDispatch } from 'redux-thunk';
 import type { Action } from 'redux';
+import type { Rule } from 'antd/es/form';
+import type { FieldData } from 'rc-field-form/lib/interface';
 
 import type reducer from './store/reducer';
 import type store from './store';
@@ -13,7 +15,7 @@ export type storeType = ReturnType<typeof store.getState>;
 export type appDispatch = ThunkDispatch<storeType, void, Action>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { getListOfArticles, getArticle, ...newRequestsActions } = requestsActions;
+const { getListOfArticles, getArticle, registerNewUser, login, ...newRequestsActions } = requestsActions;
 
 const actions = {
     ...newRequestsActions,
@@ -25,7 +27,15 @@ export interface IAuthor {
     username: string;
     image: string;
     bio: string;
+}
+
+export interface IAuthorWithFollowing extends IAuthor {
     following: boolean;
+}
+
+export interface IUser extends IAuthor {
+    email: 'string';
+    token: 'string';
 }
 
 export interface IArticle {
@@ -57,3 +67,18 @@ const omit = ['body', 'slug'] as const;
 export type IArticleCard = Omit<IArticle, (typeof omit)[number]>;
 
 export type errorsType = keyof typeof errorsState;
+
+export interface IFormValues {
+    name: string;
+    label?: string;
+    rules?: Rule[];
+    valuePropName?: string;
+}
+
+export interface IForm {
+    title: string;
+    btnText: string;
+    action: (fields: FieldData[]) => (dispatch: appDispatch) => Promise<void>;
+    initial: FieldData[];
+    children: JSX.Element[];
+}
