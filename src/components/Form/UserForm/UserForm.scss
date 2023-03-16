@@ -1,0 +1,38 @@
+@import '../../../assets/scss/vars';
+
+$maxWidth: 384px;
+
+.userForm {
+    width: clamp(calc($mobileWidth - 4rem), 100%, $maxWidth);
+    background-color: $mainColor;
+    padding: 3rem 2.28rem;
+    margin: 3.6rem auto;
+
+    @media (max-width: $maxWidth) {
+        margin: 0;
+        min-height: 100vh;
+    }
+}
+.userForm button {
+    width: 100%;
+    margin-bottom: 8px;
+}
+.userForm__prompt {
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    text-align: center;
+    color: $thirdFontColor;
+}
+.userForm__prompt > a {
+    &, &:visited, &:hover, &:visited:hover {
+        color: $secondColor;
+    }
+}
+.userForm > form hr {
+    border-top: 1px solid #E8E8E8;
+    margin-bottom: 8px;
+    margin-top: 1.31rem;
+}
+.userForm > form > div > div:first-child > div:first-child > label:first-child::before {
+    display: none;
+}
