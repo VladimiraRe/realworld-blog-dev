@@ -18,3 +18,15 @@ export class ServerError extends FetchError {
         super(status, 'server error');
     }
 }
+
+export class UnauthorizedError extends FetchError {
+    constructor(status: number) {
+        super(status, 'unauthorized error');
+    }
+}
+
+export class ReservedError extends FetchError {
+    constructor(status: number) {
+        super(status, 'reserved error');
+    }
+}

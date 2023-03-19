@@ -11,6 +11,10 @@ export const alertMessage = {
     },
     serverError: 'Our server is down, please try again later',
     fetchError: 'An error occurred, please contact support',
+    registrationError: 'This user is already registered',
+    loginError: 'Wrong login or password',
+    updateUserError: 'Log in to change your profile information',
+    networkError: 'No Internet. The application does not work correctly',
     successful: (action: string) => `${action} completed successfully!`,
 } as const;
 

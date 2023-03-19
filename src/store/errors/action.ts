@@ -1,8 +1,6 @@
-import type { errorsType } from '../../type';
-
-const setError = (error: errorsType) => ({
+const setError = (errors: string) => ({
     type: 'SET_ERROR' as const,
-    error,
+    errors,
 });
 
 export default setError;
