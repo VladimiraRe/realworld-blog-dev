@@ -40,11 +40,12 @@ export default function FullArticle() {
         return <Error message={alertMessage.notFoundError.article} type={alertType.warning} />;
 
     const { body, ...data } = article;
+    const text = body.replace(/\\n/gi, '\n &nbsp;');
 
     return (
         <ArticleCard data={data}>
             <ReactMarkdown className='article__body' remarkPlugins={[remarkGfm]}>
-                {body}
+                {text}
             </ReactMarkdown>
         </ArticleCard>
     );

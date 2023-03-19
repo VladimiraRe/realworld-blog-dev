@@ -1,9 +1,10 @@
 .article__body {
-    all: revert;
-    margin-top: 25px;
-
     * {
         all: revert;
+        white-space: pre-line;
     }
 
+    all: revert;
+    margin-top: 25px;
+    white-space: pre-line;
 }

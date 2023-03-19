@@ -32,7 +32,7 @@ export default function ArticlesList({ page, pageSize }: IArticlesList) {
         createdAt = format(new Date(createdAt), 'PP');
         return (
             <li key={uuidv1()}>
-                <Link to={(location) => `${location.pathname}/${article.author.username}/${slug}`}>
+                <Link to={({ pathname }) => `${pathname === '/articles' ? pathname : '/articles'}/${slug}`}>
                     <ArticleCard data={{ ...article, createdAt }} />
                 </Link>
             </li>
