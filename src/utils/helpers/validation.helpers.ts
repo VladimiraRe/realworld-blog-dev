@@ -19,8 +19,16 @@ const rules: { [key: string]: Rule[] } = {
         },
         {
             type: 'email',
-            message: 'The input is not valid E-mail!',
+            message: 'The input is not valid email!',
         },
+        () => ({
+            validator(rule, value) {
+                if (!value || (value.match(/^[a-z]/) && rule.type !== 'email')) {
+                    return Promise.resolve();
+                }
+                return Promise.reject(new Error('The input is not valid email!'));
+            },
+        }),
     ],
     password: [
         {
