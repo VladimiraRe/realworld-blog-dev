@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { setLoggedIn } from '../../store/requests/action';
 import Button from '../Button';
 import Author from '../Author';
+import image from '../../assets/images/avatar.svg';
 
 interface ILogin {
     loggedIn: {
@@ -15,13 +16,16 @@ interface ILogin {
 
 export default function LoggedIn({ loggedIn }: ILogin) {
     const dispatch = useDispatch();
-    const logOut = () => dispatch(setLoggedIn(null));
+    const logOut = () => {
+        document.cookie = 'token=""; max-age=0';
+        dispatch(setLoggedIn(null));
+    };
 
     return (
         <>
             <Button text='create article' type='accent' />
             <Link to='/profile'>
-                <Author data={{ username: loggedIn.username, image: loggedIn.image }} />
+                <Author data={{ username: loggedIn.username, image: loggedIn.image || image }} />
             </Link>
             <Button text='log out' onClick={logOut} />
         </>
