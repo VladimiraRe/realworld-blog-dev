@@ -6,7 +6,15 @@ interface IFormItem extends IFormValues {
     component: JSX.Element;
 }
 
-export default function FormItem({ name, rules, label, valuePropName, component }: IFormItem) {
+export default function FormItem({
+    name,
+    rules,
+    label,
+    valuePropName,
+    component,
+    dependencies,
+    hasFeedback,
+}: IFormItem) {
     const className = ['form__item'];
     if (rules) className.push('form__item--rules');
 
@@ -17,6 +25,8 @@ export default function FormItem({ name, rules, label, valuePropName, component 
             label={label}
             valuePropName={valuePropName}
             rules={rules}
+            dependencies={dependencies}
+            hasFeedback={hasFeedback}
         >
             {component}
         </Form.Item>
