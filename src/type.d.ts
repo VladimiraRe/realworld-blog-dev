@@ -6,19 +6,26 @@ import type { FieldData } from 'rc-field-form/lib/interface';
 import type reducer from './store/reducer';
 import type store from './store';
 import * as requestsActions from './store/requests/action';
+import * as errorsActions from './store/errors/action';
 import type { errorsState } from './store/errors/reducer';
 
 export type inferValuesType<T> = T extends { [key: string]: infer U } ? U : never;
+
+export type ConvertInterfaceToDict<T> = {
+    [K in keyof T]: T[K];
+};
 
 export type rootState = ReturnType<typeof reducer>;
 export type storeType = ReturnType<typeof store.getState>;
 export type appDispatch = ThunkDispatch<storeType, void, Action>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { getListOfArticles, getArticle, registerNewUser, login, ...newRequestsActions } = requestsActions;
+const { getListOfArticles, getArticle, registerNewUser, login, updateUser, getUser, ...newRequestsActions } =
+    requestsActions;
 
 const actions = {
     ...newRequestsActions,
+    ...errorsActions,
 };
 
 export type actionsType = ReturnType<inferValuesType<typeof actions>>;
@@ -34,8 +41,16 @@ export interface IAuthorWithFollowing extends IAuthor {
 }
 
 export interface IUser extends IAuthor {
-    email: 'string';
-    token: 'string';
+    email: string;
+    token?: string;
+}
+
+export interface IUpdateUser {
+    username?: string;
+    email?: string;
+    password?: string;
+    image?: string;
+    token: string;
 }
 
 export interface IArticle {
@@ -73,12 +88,14 @@ export interface IFormValues {
     label?: string;
     rules?: Rule[];
     valuePropName?: string;
+    dependencies?: NamePath[];
+    hasFeedback?: boolean;
 }
 
-export interface IForm {
+export interface IForm<T> {
     title: string;
     btnText: string;
-    action: (fields: FieldData[]) => (dispatch: appDispatch) => Promise<void>;
+    action: (fields: T) => (dispatch: appDispatch) => Promise<void>;
     initial: FieldData[];
     children: JSX.Element[];
 }

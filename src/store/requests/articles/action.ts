@@ -6,12 +6,12 @@ import api from '../../../api/realWorldApi';
 import { setIsLoading } from '../action';
 import { NotFoundError, ServerError } from '../../../errors/customErrors';
 
-export const setListOfArticles = (listOfArticles: IListOfArticles | 'notFoundError') => ({
+export const setListOfArticles = (listOfArticles: IListOfArticles) => ({
     type: 'SET_LIST_OF_ARTICLES' as const,
     listOfArticles,
 });
 
-export const setArticle = (articleData: IStateArticle | 'notFoundError') => ({
+export const setArticle = (articleData: IStateArticle) => ({
     type: 'SET_ARTICLE' as const,
     articleData,
 });
@@ -33,9 +33,9 @@ async function getData(fetch: () => Promise<unknown>, dispatch: appDispatch, set
         dispatchAction.setData(data);
     } catch (err) {
         if (err instanceof NotFoundError) {
-            dispatchAction.setData('notFoundError');
+            dispatchAction.setData({ hasError: 'notFoundError' });
         } else {
-            dispatchAction.setData(err instanceof ServerError ? 'serverError' : 'fetchError');
+            dispatchAction.setData({ hasError: err instanceof ServerError ? 'serverError' : 'fetchError' });
         }
     } finally {
         dispatch(setIsLoading(false));

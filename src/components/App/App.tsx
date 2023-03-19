@@ -10,9 +10,22 @@ import RegistrationPage from '../../pages/RegistrationPage';
 import LoginPage from '../../pages/LoginPage';
 import EditProfilePage from '../../pages/EditProfilePage';
 import Alert, { alertMessage, alertType } from '../Alert';
+import useSideContents from '../../utils/hooks/useSideContent';
+import useNetworkError from '../../errors/useNetworkError';
 
 export default function App() {
     const { loggedIn } = useSelector((state: storeType) => state.user);
+    const hasError = useSelector((state: storeType) => state.hasError);
+
+    useNetworkError();
+
+    const sideContents = useSideContents({
+        error: {
+            hasError: Array.isArray(hasError) ? (hasError.at(-1) as string) : hasError,
+            props: () => generateErrorMessage(hasError as string[]),
+        },
+    });
+    if (sideContents) return <Container component={sideContents} />;
 
     return (
         <div className='app'>
@@ -26,7 +39,7 @@ export default function App() {
                         render={() => (loggedIn ? <EditProfilePage /> : <Redirect to='/sign-in' />)}
                     />
                     <Route path='/sign-up' exact component={RegistrationPage} />
-                    <Route path='/articles/:key/:slug' render={() => <Container component={<FullArticle />} />} />
+                    <Route path='/articles/:slug' render={() => <Container component={<FullArticle />} />} />
                     <Route
                         path={['/', '/articles', '/articles/?page=']}
                         exact
@@ -39,4 +52,11 @@ export default function App() {
             </BrowserRouter>
         </div>
     );
+}
+
+function generateErrorMessage(error: string[]) {
+    const res: { text: string } = { text: alertMessage.fetchError };
+    if (error.find((el) => el === 'networkError')) res.text = alertMessage.networkError;
+    if (error.find((el) => el === 'serverError')) res.text = alertMessage.serverError;
+    return res;
 }

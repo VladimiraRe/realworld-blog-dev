@@ -7,7 +7,7 @@ export function listOfArticles(state: IListOfArticles = initialListOfArticles, a
     switch (action.type) {
         case 'SET_LIST_OF_ARTICLES': {
             const { listOfArticles: data } = action;
-            return typeof data === 'string' ? { ...initialListOfArticles, hasError: data } : data;
+            return data.hasError ? { ...initialListOfArticles, hasError: data.hasError } : data;
         }
         default:
             return state;
@@ -18,7 +18,7 @@ export function article(state: IStateArticle = initialArticle, action: actionsTy
     switch (action.type) {
         case 'SET_ARTICLE': {
             const { articleData: data } = action;
-            return typeof data === 'string' ? { ...initialArticle, hasError: data } : data;
+            return data.hasError ? { ...initialArticle, hasError: data.hasError } : data;
         }
         default:
             return state;
