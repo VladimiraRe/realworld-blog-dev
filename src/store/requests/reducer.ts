@@ -11,3 +11,12 @@ export function isLoading(state = false, action: actionsType) {
             return state;
     }
 }
+
+export function isDataUpdate(state: boolean | null = null, action: actionsType) {
+    switch (action.type) {
+        case 'SET_IS_DATA_UPDATE':
+            return action.isDataUpdate;
+        default:
+            return state;
+    }
+}

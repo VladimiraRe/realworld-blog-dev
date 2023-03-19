@@ -1,46 +1,41 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Input, Checkbox } from 'antd';
 import type { FieldData } from 'rc-field-form/lib/interface';
 
-import type { appDispatch, storeType } from '../type';
+import type { storeType } from '../type';
 import rules from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
-import { changeIsRegistered, registerNewUser, setIsLoading } from '../store/requests/action';
+import { changeIsRegistered, registerNewUser, setUserError } from '../store/requests/action';
+import type { alertType } from '../components/Alert';
 import Alert, { alertMessage } from '../components/Alert';
-import Loading from '../components/Loading';
+import useSideContent from '../utils/hooks/useSideContent';
+import useCleaner from '../utils/hooks/useCleaner';
 
 export default function RegistrationPage() {
-    const dispatch: appDispatch = useDispatch();
-    const { isRegistered } = useSelector((state: storeType) => state.user);
-    const isLoading = useSelector((state: storeType) => state.isLoading);
+    const { isRegistered, hasError } = useSelector((state: storeType) => state.user);
 
-    useEffect(
-        () => () => {
-            if (isLoading) dispatch(setIsLoading(false));
-            if (isRegistered) dispatch(changeIsRegistered());
-        },
-        [dispatch, isRegistered, isLoading]
+    useCleaner([
+        { check: isRegistered, action: () => changeIsRegistered() },
+        { check: !!hasError, action: () => setUserError(null) },
+    ]);
+
+    const alertAction = (
+        <p>
+            <Link to='/sign-in'>Follow the link</Link> to log into your account
+        </p>
+    );
+    const registrationMessage = (
+        <Alert message={alertMessage.successful('registration')} type='success' action={alertAction} />
     );
 
-    if (isLoading) return <Container component={<Loading />} />;
+    const sideContent = useSideContent({
+        error: { hasError, props: () => generateErrorMessage(hasError) },
+        other: [{ check: isRegistered, component: registrationMessage }],
+    });
 
-    if (isRegistered) {
-        const alertAction = (
-            <p>
-                <Link to='/sign-in'>Follow the link</Link> to log into your account
-            </p>
-        );
-        return (
-            <Container
-                component={
-                    <Alert message={alertMessage.successful('registration')} type='success' action={alertAction} />
-                }
-            />
-        );
-    }
+    if (sideContent) return <Container component={sideContent} />;
 
     const names = ['username', 'email', 'password', 'repeat password', 'agreement'];
 
@@ -57,24 +52,29 @@ export default function RegistrationPage() {
                     name={names[0]}
                     label={names[0]}
                     rules={rules.username}
+                    hasFeedback
                     component={<Input placeholder={names[0]} />}
                 />
                 <FormItem
                     name={names[1]}
                     label={names[1]}
                     rules={rules.email}
+                    hasFeedback
                     component={<Input placeholder={names[1]} />}
                 />
                 <FormItem
                     name={names[2]}
                     label={names[2]}
                     rules={rules.password}
+                    hasFeedback
                     component={<Input.Password placeholder={names[2]} />}
                 />
                 <FormItem
                     name={names[3]}
                     label={names[3]}
-                    rules={rules.password}
+                    rules={rules.repeatPassword}
+                    dependencies={[names[2]]}
+                    hasFeedback
                     component={<Input.Password placeholder={names[3]} />}
                 />
                 <hr />
@@ -87,4 +87,14 @@ export default function RegistrationPage() {
             </Form>
         </UserForm>
     );
+}
+
+function generateErrorMessage(error: string | null) {
+    const res: { text: string; type?: keyof typeof alertType } = { text: alertMessage.fetchError };
+    if (error === 'reservedError') {
+        res.text = alertMessage.registrationError;
+        res.type = 'warning';
+    }
+    if (error === 'serverError') res.text = alertMessage.serverError;
+    return res;
 }

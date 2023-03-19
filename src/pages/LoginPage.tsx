@@ -1,37 +1,34 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Input } from 'antd';
 
-import type { appDispatch, IFormValues, storeType } from '../type';
-import { login, setIsLoading } from '../store/requests/action';
+import type { IFormValues, storeType } from '../type';
+import { login, setUserError } from '../store/requests/action';
 import rules from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
-import Loading from '../components/Loading';
+import useCleaner from '../utils/hooks/useCleaner';
+import useSideContent from '../utils/hooks/useSideContent';
+import { alertMessage } from '../components/Alert';
 
 export default function LoginPage() {
-    const dispatch: appDispatch = useDispatch();
-    const isLoading = useSelector((state: storeType) => state.isLoading);
+    const { hasError } = useSelector((state: storeType) => state.user);
 
-    useEffect(
-        () => () => {
-            if (isLoading) dispatch(setIsLoading(false));
-        },
-        [dispatch, isLoading]
-    );
+    useCleaner([{ check: !!hasError, action: () => setUserError(null) }]);
 
-    if (isLoading) return <Container component={<Loading />} />;
+    const sideContent = useSideContent({ error: { hasError, props: () => generateErrorMessage(hasError) } });
 
-    const names = ['email address', 'password'];
+    if (sideContent) return <Container component={sideContent} />;
+
+    const names = ['email', 'password'];
 
     const initial: IFormValues[] = names.map((name) => ({ name, value: null }));
 
     return (
-        <UserForm promptText='Don’t have an account?' promptLink={{ text: 'Sign Up', link: '/sign-up' }}>
+        <UserForm promptText="Don't have an account?" promptLink={{ text: 'Sign Up', link: '/sign-up' }}>
             <Form title='sign in' btnText='login' action={login} initial={initial}>
                 <FormItem
                     name={names[0]}
-                    label={names[0]}
+                    label='email address'
                     rules={rules.email}
                     component={<Input placeholder={names[0]} />}
                 />
@@ -44,4 +41,11 @@ export default function LoginPage() {
             </Form>
         </UserForm>
     );
+}
+
+function generateErrorMessage(error: string | null) {
+    const res: { text: string } = { text: alertMessage.fetchError };
+    if (error === 'unauthorizedError') res.text = alertMessage.loginError;
+    if (error === 'serverError') res.text = alertMessage.serverError;
+    return res;
 }
