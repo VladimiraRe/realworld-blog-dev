@@ -1,7 +1,7 @@
 import type { actionsType, IListOfArticles, IStateArticle } from '../../../type';
 
 const initialListOfArticles = { articles: null, articlesCount: null, offset: null, hasError: null };
-const initialArticle = { article: null, hasError: null };
+const initialArticle = { article: null, hasError: null, isChanged: false, isCreated: false };
 
 export function listOfArticles(state: IListOfArticles = initialListOfArticles, action: actionsType) {
     switch (action.type) {
@@ -18,7 +18,7 @@ export function article(state: IStateArticle = initialArticle, action: actionsTy
     switch (action.type) {
         case 'SET_ARTICLE': {
             const { articleData: data } = action;
-            return data.hasError ? { ...initialArticle, hasError: data.hasError } : data;
+            return data.hasError ? { ...initialArticle, hasError: data.hasError } : { ...state, ...data };
         }
         default:
             return state;

@@ -1,6 +1,6 @@
 import type { Rule } from 'antd/es/form';
 
-const rules: { [key: string]: Rule[] } = {
+const userRules: { [key: string]: Rule[] } = {
     username: [
         {
             required: true,
@@ -71,4 +71,25 @@ const rules: { [key: string]: Rule[] } = {
     ],
 };
 
-export default rules;
+const articleRules: { [key: string]: Rule[] } = {
+    title: [
+        {
+            required: true,
+            message: 'Please input article title!',
+        },
+    ],
+    description: [
+        {
+            required: true,
+            message: 'Please input article description!',
+        },
+    ],
+    text: [
+        {
+            required: true,
+            message: 'Please input article text!',
+        },
+    ],
+};
+
+export { userRules, articleRules };

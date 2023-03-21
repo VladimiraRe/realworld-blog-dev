@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { ThunkDispatch } from 'redux-thunk';
 import type { Action } from 'redux';
 import type { Rule } from 'antd/es/form';
@@ -19,9 +20,16 @@ export type rootState = ReturnType<typeof reducer>;
 export type storeType = ReturnType<typeof store.getState>;
 export type appDispatch = ThunkDispatch<storeType, void, Action>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { getListOfArticles, getArticle, registerNewUser, login, updateUser, getUser, ...newRequestsActions } =
-    requestsActions;
+const {
+    getListOfArticles,
+    getArticle,
+    registerNewUser,
+    login,
+    updateUser,
+    getUser,
+    createArtile,
+    ...newRequestsActions
+} = requestsActions;
 
 const actions = {
     ...newRequestsActions,
@@ -53,12 +61,15 @@ export interface IUpdateUser {
     token: string;
 }
 
-export interface IArticle {
-    slug: string;
+export interface INewArticle {
     title: string;
     description: string;
     body: string;
     tagList: string[];
+}
+
+export interface IArticle extends INewArticle {
+    slug: string;
     createdAt: string;
     updatedAt?: string;
     favorited: boolean;
@@ -69,6 +80,8 @@ export interface IArticle {
 export interface IStateArticle {
     article: IArticle | null;
     hasError: string | null;
+    isChanged: boolean;
+    isCreated: boolean;
 }
 
 export interface IListOfArticles {
@@ -96,6 +109,6 @@ export interface IForm<T> {
     title: string;
     btnText: string;
     action: (fields: T) => (dispatch: appDispatch) => Promise<void>;
-    initial: FieldData[];
+    initial: { [key: string]: string | (string | null)[] | null | boolean };
     children: JSX.Element[];
 }

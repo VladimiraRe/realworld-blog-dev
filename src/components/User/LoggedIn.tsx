@@ -23,7 +23,9 @@ export default function LoggedIn({ loggedIn }: ILogin) {
 
     return (
         <>
-            <Button text='create article' type='accent' />
+            <Link to='/new-article'>
+                <Button text='create article' type='accent' />
+            </Link>
             <Link to='/profile'>
                 <Author data={{ username: loggedIn.username, image: loggedIn.image || image }} />
             </Link>

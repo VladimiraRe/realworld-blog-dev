@@ -15,6 +15,7 @@ export const alertMessage = {
     loginError: 'Wrong login or password',
     updateUserError: 'Log in to change your profile information',
     networkError: 'No Internet. The application does not work correctly',
+    noAccessError: "You don't have permission to access this page",
     successful: (action: string) => `${action} completed successfully!`,
 } as const;
 

@@ -1,10 +1,9 @@
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Input, Checkbox } from 'antd';
-import type { FieldData } from 'rc-field-form/lib/interface';
 
 import type { storeType } from '../type';
-import rules from '../utils/helpers/validation.helpers';
+import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
 import { changeIsRegistered, registerNewUser, setUserError } from '../store/requests/action';
@@ -39,10 +38,9 @@ export default function RegistrationPage() {
 
     const names = ['username', 'email', 'password', 'repeat password', 'agreement'];
 
-    const initial: FieldData[] = names.map((name) => {
-        const obj: FieldData = { name };
-        obj.value = name === 'agreement' ? false : null;
-        return obj;
+    const initial: { [key: string]: string | null | boolean } = {};
+    names.forEach((name) => {
+        initial[name] = name === 'agreement' ? false : null;
     });
 
     return (
@@ -51,28 +49,28 @@ export default function RegistrationPage() {
                 <FormItem
                     name={names[0]}
                     label={names[0]}
-                    rules={rules.username}
+                    rules={userRules.username}
                     hasFeedback
                     component={<Input placeholder={names[0]} />}
                 />
                 <FormItem
                     name={names[1]}
                     label={names[1]}
-                    rules={rules.email}
+                    rules={userRules.email}
                     hasFeedback
                     component={<Input placeholder={names[1]} />}
                 />
                 <FormItem
                     name={names[2]}
                     label={names[2]}
-                    rules={rules.password}
+                    rules={userRules.password}
                     hasFeedback
                     component={<Input.Password placeholder={names[2]} />}
                 />
                 <FormItem
                     name={names[3]}
                     label={names[3]}
-                    rules={rules.repeatPassword}
+                    rules={userRules.repeatPassword}
                     dependencies={[names[2]]}
                     hasFeedback
                     component={<Input.Password placeholder={names[3]} />}
@@ -80,7 +78,7 @@ export default function RegistrationPage() {
                 <hr />
                 <FormItem
                     name={names[4]}
-                    rules={rules.agreement}
+                    rules={userRules.agreement}
                     valuePropName='checked'
                     component={<Checkbox>I agree to the processing of my personal information</Checkbox>}
                 />

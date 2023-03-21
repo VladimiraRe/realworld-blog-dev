@@ -1,9 +1,9 @@
 import { useSelector } from 'react-redux';
 import { Input } from 'antd';
 
-import type { ConvertInterfaceToDict, IFormValues, IUpdateUser, storeType } from '../type';
+import type { ConvertInterfaceToDict, IUpdateUser, storeType } from '../type';
 import { setIsDataUpdate, setUserError, updateUser } from '../store/requests/action';
-import rules from '../utils/helpers/validation.helpers';
+import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
 import useCleaner from '../utils/hooks/useCleaner';
@@ -33,11 +33,12 @@ export default function EditProfilePage() {
     if (sideContent) return <Container component={sideContent} />;
 
     const names = ['username', 'email', 'password', 'image'];
-    const initial: IFormValues[] = names.map((name, inx) => {
+    const initial: { [key: string]: string | null } = {};
+    names.forEach((name, inx) => {
         let value = null;
         if (inx === 0 && loggedIn) value = loggedIn.username;
         if (inx === 1 && loggedIn) value = loggedIn.email;
-        return { name, value };
+        initial[name] = value;
     });
 
     return (
@@ -51,25 +52,25 @@ export default function EditProfilePage() {
                 <FormItem
                     name={names[0]}
                     label={names[0]}
-                    rules={rules.username}
+                    rules={userRules.username}
                     component={<Input placeholder={names[0]} />}
                 />
                 <FormItem
                     name={names[1]}
                     label='email address'
-                    rules={rules.email}
+                    rules={userRules.email}
                     component={<Input placeholder={names[1]} />}
                 />
                 <FormItem
                     name={names[2]}
                     label='new password'
-                    rules={rules.password}
+                    rules={userRules.password}
                     component={<Input.Password placeholder={names[2]} />}
                 />
                 <FormItem
                     name={names[3]}
                     label='avatar image'
-                    rules={rules.url}
+                    rules={userRules.url}
                     component={<Input placeholder='avatar image (url)' />}
                 />
             </Form>

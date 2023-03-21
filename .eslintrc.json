@@ -38,7 +38,7 @@
     ],
     "rules": {
         "linebreak-style": ["off", "unix"],
-        "quotes": ["error", "single"], //in .prettierrc singleQuote must be true
+        "quotes": ["error", "single", { "avoidEscape": true }], //in .prettierrc singleQuote must be true
         "max-len": ["error", {"code": 120, "ignoreUrls": true}], //keep this and Prettier’s printWidth option in sync
         //rules of eslint-plugin-import:
         "import/no-unresolved": [2, { "caseSensitive": false }], //don't reported if './foo' is actually './Foo'

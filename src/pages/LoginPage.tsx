@@ -1,9 +1,9 @@
 import { useSelector } from 'react-redux';
 import { Input } from 'antd';
 
-import type { IFormValues, storeType } from '../type';
+import type { storeType } from '../type';
 import { login, setUserError } from '../store/requests/action';
-import rules from '../utils/helpers/validation.helpers';
+import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
 import useCleaner from '../utils/hooks/useCleaner';
@@ -21,7 +21,10 @@ export default function LoginPage() {
 
     const names = ['email', 'password'];
 
-    const initial: IFormValues[] = names.map((name) => ({ name, value: null }));
+    const initial: { [key: string]: string | null } = {};
+    names.forEach((name) => {
+        initial[name] = null;
+    });
 
     return (
         <UserForm promptText="Don't have an account?" promptLink={{ text: 'Sign Up', link: '/sign-up' }}>
@@ -29,13 +32,13 @@ export default function LoginPage() {
                 <FormItem
                     name={names[0]}
                     label='email address'
-                    rules={rules.email}
+                    rules={userRules.email}
                     component={<Input placeholder={names[0]} />}
                 />
                 <FormItem
                     name={names[1]}
                     label={names[1]}
-                    rules={rules.password}
+                    rules={userRules.password}
                     component={<Input.Password placeholder={names[1]} />}
                 />
             </Form>

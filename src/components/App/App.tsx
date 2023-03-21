@@ -12,6 +12,7 @@ import EditProfilePage from '../../pages/EditProfilePage';
 import Alert, { alertMessage, alertType } from '../Alert';
 import useSideContents from '../../utils/hooks/useSideContent';
 import useNetworkError from '../../errors/useNetworkError';
+import CreateArticlePage from '../../pages/CreateArticlePage';
 
 export default function App() {
     const { loggedIn } = useSelector((state: storeType) => state.user);
@@ -45,6 +46,7 @@ export default function App() {
                         exact
                         render={() => <Container component={<ListOfArticles />} />}
                     />
+                    <Route path='/new-article' exact component={CreateArticlePage} />
                     <Route
                         render={() => <Alert message={alertMessage.notFoundError.page} type={alertType.warning} />}
                     />

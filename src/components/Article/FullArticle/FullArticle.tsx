@@ -5,7 +5,7 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import type { storeType, appDispatch } from '../../../type';
-import { getArticle, setIsLoading } from '../../../store/requests/action';
+import { getArticle, setArticle, setIsLoading } from '../../../store/requests/action';
 import ArticleCard from '../ArticleCard';
 import Loading from '../../Loading';
 import Error, { alertMessage, alertType, getAlertMessage } from '../../Alert';
@@ -20,12 +20,13 @@ export default function FullArticle() {
 
     useEffect(() => {
         const linkSlug = history.location.pathname.split('/').at(-1) as string;
-        if (!article || (Object.keys(article).length !== 0 && article.slug !== linkSlug))
+        if (!hasError && (!article || (Object.keys(article).length !== 0 && article.slug !== linkSlug)))
             dispatch(getArticle(linkSlug));
         return () => {
             if (isLoading) dispatch(setIsLoading(false));
+            if (hasError) dispatch(setArticle({ hasError: null }));
         };
-    }, [article, dispatch, history, isLoading]);
+    }, [article, dispatch, history, isLoading, hasError]);
 
     if (hasError) {
         const message = getAlertMessage(hasError, 'article');
@@ -40,7 +41,7 @@ export default function FullArticle() {
         return <Error message={alertMessage.notFoundError.article} type={alertType.warning} />;
 
     const { body, ...data } = article;
-    const text = body.replace(/\\n/gi, '\n &nbsp;');
+    const text = body ? body.replace(/\\n/gi, '\n &nbsp;') : '';
 
     return (
         <ArticleCard data={data}>

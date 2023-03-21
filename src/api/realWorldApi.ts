@@ -1,4 +1,4 @@
-import type { IListOfArticles, IArticle, IUser, IUpdateUser } from '../type';
+import type { IListOfArticles, IArticle, IUser, IUpdateUser, INewArticle } from '../type';
 import { FetchError, ServerError, UnauthorizedError, ReservedError } from '../errors/customErrors';
 
 interface IParameters {
@@ -76,6 +76,14 @@ class Api {
         };
         const { user } = await this._change<{ user: IUser }>('put', request, body, headers);
         return user;
+    }
+
+    async createArtile(articleData: INewArticle, token: string) {
+        const request = 'articles';
+        const body = { article: articleData };
+        const headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
+        const { article } = await this._change<{ article: IArticle }>('post', request, body, headers);
+        return article;
     }
 
     async _get<T>({

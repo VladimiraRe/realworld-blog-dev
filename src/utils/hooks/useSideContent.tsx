@@ -5,12 +5,12 @@ import type { alertType } from '../../components/Alert';
 import Loading from '../../components/Loading';
 import Alert from '../../components/Alert';
 
-interface IUseSideContents {
+export interface IUseSideContents {
     error: {
         hasError: string | null;
         props: () => { text: string; type?: keyof typeof alertType };
     };
-    other?: { check: boolean; component: JSX.Element }[];
+    other?: { check: boolean; component?: JSX.Element; action?: () => void }[];
 }
 
 export default function useSideContents({ error, other }: IUseSideContents) {
@@ -25,8 +25,9 @@ export default function useSideContents({ error, other }: IUseSideContents) {
 
     if (!other) return false;
     // eslint-disable-next-line no-restricted-syntax
-    for (const { check, component } of other) {
-        if (check) return component;
+    for (const { check, component, action } of other) {
+        if (check && component) return component;
+        if (check && action) return action();
     }
 
     return false;

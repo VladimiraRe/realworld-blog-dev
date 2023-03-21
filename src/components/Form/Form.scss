@@ -1,5 +1,10 @@
 @import '../../assets/scss/vars';
 
+$inputWidth: clamp(calc($mobileWidth - 12px * 2), 18.75rem, calc(100% - 115.78px));
+
+.form__body > div > div:first-child > div:first-child > label:first-child::before {
+    display: none;
+}
 .form__title {
     font-weight: 500;
     font-size: 1.25rem;
@@ -13,8 +18,9 @@
 .form__item {
     margin-bottom: 0.75rem;
 }
-.form__body button {
+.form__body > button {
     margin-top: calc(1.31rem - 0.75rem);
+    width: $inputWidth;
 }
 .form__item > div:first-child > div > label,
 .form__item label > span:nth-child(2) {
@@ -22,14 +28,58 @@
     line-height: 1.375rem;
     color: $fourthColor;
 }
+.form__item > div > div > div > div > div > textarea {
+    height: 10.5rem;
+}
+.dynamicForm > label,
+.dynamicForm > .dynamicForm__item > div > div > div > div > div > input,
 .form__item > div:first-child > div > label,
-.form__item > div:first-child > div > div > div > input {
+.form__item > div:first-child > div > div > div > input,
+.form__item > div:first-child > div > div > div > textarea,
+.form__item > div:first-child > div > div > div > span > input {
     display: block;
-    &::first-letter {
+    &::first-letter, &::placeholder {
         text-transform: capitalize;
     }
 }
 .form__item--rules > div > div:nth-of-type(2) > div:nth-of-type(2) > div > div {
     font-size: 0.875rem;
     line-height: 1.375rem;
+}
+.dynamicForm {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 17px;
+}
+.dynamicForm > label {
+    padding: 0 0 8px;
+    flex-basis: 100%;
+}
+.dynamicForm__item {
+    display: flex;
+    column-gap: 17px;
+    
+    &:not(:nth-last-child(2)) {
+        margin-bottom: 5px;
+        flex-basis: 100%;
+    }
+
+    & > div, & > button {
+        margin: 0;
+    }
+}
+.dynamicForm button {
+    padding: 8px 36px;
+}
+.dynamicForm__item > div > div > div > div > div > input {
+    padding: 8px 12px;
+    width: $inputWidth;
+}
+.dynamicForm > .dynamicForm__addBtn {
+    display: inline-block;
+    margin: 0;
+
+    & > div > div > div > div > button {
+        margin: 0;
+    }
 }
