@@ -26,9 +26,9 @@ export default function Author({ children, data }: IAuthorData) {
     );
 
     return (
-        <section className='author'>
+        <div className='author'>
             {info}
             <img src={image} onError={() => setImage(BASE_IMAGE)} alt='User avatar' />
-        </section>
+        </div>
     );
 }

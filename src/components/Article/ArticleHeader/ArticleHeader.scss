@@ -4,7 +4,7 @@
     font-size: 1.25rem;
     line-height: 1.75rem;
     color: $secondColor;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     text-align: justify;
 }
 .article__header {
@@ -27,6 +27,26 @@
     flex: 1;
     }
 }
+.article__header > div:first-of-type {
+    max-width: calc(65% - 15px);
+
+    @media (max-width: $mobileWidth) {
+        max-width: none;
+    }
+}
+.article__header > div:last-of-type {
+    max-width: calc(35% - 15px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+    row-gap: 1.25rem;
+
+    @media (max-width: $mobileWidth) {
+        max-width: none;
+        align-items: stretch;
+    }
+}
 .article__titleWrap {
     display: flex;
     column-gap: 13px;
@@ -42,4 +62,7 @@
     color: $thirdFontColor;
     border-color: $thirdFontColor;
     line-height: 1.5em;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
 }

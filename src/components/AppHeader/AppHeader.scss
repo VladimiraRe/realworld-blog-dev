@@ -6,6 +6,8 @@
     align-items: center;
     background-color: $mainColor;
     padding: 13px 22px;
+    flex-wrap: wrap;
+    row-gap: 30px;
 }
 .appHeader__logo {
     font-size: 1.125rem;
@@ -16,5 +18,30 @@
 
     &, &:hover, &:visited:hover {
         color: $mainFontColor;
+    }
+
+    @media (max-width: 630px) {
+        width: 100%;
+        text-align: center;
+    }
+}
+.appHeader > .user--loggedIn {
+    & > a:nth-child(2) {
+        margin-left: auto;
+    }
+
+    @media (max-width: 630px) {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    @media (max-width: 474px) {
+        & > button:first-child {
+            order: 3;
+            width: 100%;
+        }
+        & > a:nth-child(2) {
+            margin-left: 0;
+        }
     }
 }

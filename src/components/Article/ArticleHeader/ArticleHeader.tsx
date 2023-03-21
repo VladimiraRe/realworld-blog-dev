@@ -1,13 +1,15 @@
 import { Tag } from 'antd';
 import { v1 as uuidv1 } from 'uuid';
+import format from 'date-fns/format';
 
 import type { IArticleCard } from '../../../type';
 import Author from '../../Author';
 import './ArticleHeader.scss';
+import ArticleBtns from '../ArticleBtns';
 
 interface IArticleHeader {
     isPage: boolean;
-    data: Omit<IArticleCard, 'description'>;
+    data: IArticleCard;
 }
 
 export default function ArticleHeader({ isPage, data }: IArticleHeader) {
@@ -17,12 +19,14 @@ export default function ArticleHeader({ isPage, data }: IArticleHeader) {
     if (!isPage) {
         className.push('article__header--preview');
         maxTag = 4;
-        title = checkLength(data.title, 30);
+        title = checkLength(data.title, 20);
     }
 
     const tags = data.tagList.slice(0, maxTag).map((tag) => {
-        return <Tag key={uuidv1()}>{isPage ? tag : checkLength(tag, 20)}</Tag>;
+        return <Tag key={uuidv1()}>{isPage ? checkLength(tag, 30) : checkLength(tag, 10)}</Tag>;
     });
+
+    const date = format(new Date(data.createdAt), 'PPP');
 
     return (
         <header className={className.join(' ')}>
@@ -38,10 +42,14 @@ export default function ArticleHeader({ isPage, data }: IArticleHeader) {
                     {tags}
                     {data.tagList.length > 5 && <span>...</span>}
                 </div>
+                <p className='article__description'>{data.description}</p>
             </div>
-            <Author data={data.author}>
-                <span>{data.createdAt}</span>
-            </Author>
+            <div>
+                <Author data={data.author}>
+                    <span>{date}</span>
+                </Author>
+                {isPage && <ArticleBtns author={data.author.username} />}
+            </div>
         </header>
     );
 }

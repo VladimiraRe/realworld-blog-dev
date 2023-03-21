@@ -1,0 +1,8 @@
+.articleBtns {
+    display: inline-flex;
+    column-gap: 12px;
+}
+.articleBtns > button {
+    padding-top: 6px;
+    padding-bottom: 6px;
+}

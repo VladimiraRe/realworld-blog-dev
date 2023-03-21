@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { setLoggedIn } from '../../store/requests/action';
 import Button from '../Button';
@@ -16,6 +16,8 @@ interface ILogin {
 
 export default function LoggedIn({ loggedIn }: ILogin) {
     const dispatch = useDispatch();
+    const { replace } = useHistory();
+
     const logOut = () => {
         document.cookie = 'token=""; max-age=0';
         dispatch(setLoggedIn(null));
@@ -23,9 +25,7 @@ export default function LoggedIn({ loggedIn }: ILogin) {
 
     return (
         <>
-            <Link to='/new-article'>
-                <Button text='create article' type='accent' />
-            </Link>
+            <Button text='create article' type='accent' onClick={() => replace('/new-article')} />
             <Link to='/profile'>
                 <Author data={{ username: loggedIn.username, image: loggedIn.image || image }} />
             </Link>
