@@ -7,10 +7,10 @@ import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
 import { changeIsRegistered, registerNewUser, setUserError } from '../store/requests/action';
-import type { alertType } from '../components/Alert';
 import Alert, { alertMessage } from '../components/Alert';
 import useSideContent from '../utils/hooks/useSideContent';
 import useCleaner from '../utils/hooks/useCleaner';
+import getErrorMessage from '../utils/hooks/getErrorMessage';
 
 export default function RegistrationPage() {
     const { isRegistered, hasError } = useSelector((state: storeType) => state.user);
@@ -30,7 +30,14 @@ export default function RegistrationPage() {
     );
 
     const sideContent = useSideContent({
-        error: { hasError, props: () => generateErrorMessage(hasError) },
+        error: {
+            hasError,
+            props: () =>
+                getErrorMessage(hasError, [
+                    ['reservedError', alertMessage.registrationError, 'warning'],
+                    ['serverError', alertMessage.serverError],
+                ]),
+        },
         other: [{ check: isRegistered, component: registrationMessage }],
     });
 
@@ -85,14 +92,4 @@ export default function RegistrationPage() {
             </Form>
         </UserForm>
     );
-}
-
-function generateErrorMessage(error: string | null) {
-    const res: { text: string; type?: keyof typeof alertType } = { text: alertMessage.fetchError };
-    if (error === 'reservedError') {
-        res.text = alertMessage.registrationError;
-        res.type = 'warning';
-    }
-    if (error === 'serverError') res.text = alertMessage.serverError;
-    return res;
 }

@@ -10,6 +10,7 @@ import useCleaner from '../utils/hooks/useCleaner';
 import useSideContent from '../utils/hooks/useSideContent';
 import type { alertType } from '../components/Alert';
 import Alert, { alertMessage } from '../components/Alert';
+import getErrorMessage from '../utils/hooks/getErrorMessage';
 
 type updateUserType = ConvertInterfaceToDict<IUpdateUser>;
 type formType = Omit<updateUserType, 'bio'>;
@@ -24,7 +25,14 @@ export default function EditProfilePage() {
     ]);
 
     const sideContent = useSideContent({
-        error: { hasError, props: () => generateErrorMessage(hasError) },
+        error: {
+            hasError,
+            props: () =>
+                getErrorMessage(hasError, [
+                    ['unauthorizedError', alertMessage.updateUserError],
+                    ['serverError', alertMessage.serverError],
+                ]),
+        },
         other: [
             { check: !loggedIn, component: generateAlert(alertMessage.updateUserError, 'error') },
             { check: !!isDataUpdate, component: generateAlert(alertMessage.successful('profile editing'), 'success') },
@@ -81,13 +89,6 @@ export default function EditProfilePage() {
 function newUserInfo(fields: formType) {
     const cleanFields = Object.entries(fields).filter((el) => el[1] !== null && el[1] !== '');
     return Object.fromEntries(cleanFields);
-}
-
-function generateErrorMessage(error: string | null) {
-    const res: { text: string } = { text: alertMessage.fetchError };
-    if (error === 'unauthorizedError') res.text = alertMessage.updateUserError;
-    if (error === 'serverError') res.text = alertMessage.serverError;
-    return res;
 }
 
 function generateAlert(message: string, type: keyof typeof alertType) {

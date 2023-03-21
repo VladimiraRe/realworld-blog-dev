@@ -8,8 +8,9 @@ import type { storeType, appDispatch } from '../../../type';
 import { getArticle, setArticle, setIsLoading } from '../../../store/requests/action';
 import ArticleCard from '../ArticleCard';
 import Loading from '../../Loading';
-import Error, { alertMessage, alertType, getAlertMessage } from '../../Alert';
+import Error, { alertMessage, alertType } from '../../Alert';
 import './FullArticle.scss';
+import getErrorMessage from '../../../utils/hooks/getErrorMessage';
 
 export default function FullArticle() {
     const { article, hasError } = useSelector((state: storeType) => state.article);
@@ -29,8 +30,11 @@ export default function FullArticle() {
     }, [article, dispatch, history, isLoading, hasError]);
 
     if (hasError) {
-        const message = getAlertMessage(hasError, 'article');
-        return <Error message={message as string} type='warning' />;
+        const { text } = getErrorMessage(hasError, [
+            ['serverError', alertMessage.serverError],
+            ['notFoundError', alertMessage.notFoundError.article],
+        ]);
+        return <Error message={text as string} type='warning' />;
     }
 
     if (isLoading) return <Loading />;

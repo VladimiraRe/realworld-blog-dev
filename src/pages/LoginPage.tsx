@@ -9,13 +9,23 @@ import Form, { UserForm, FormItem } from '../components/Form';
 import useCleaner from '../utils/hooks/useCleaner';
 import useSideContent from '../utils/hooks/useSideContent';
 import { alertMessage } from '../components/Alert';
+import getErrorMessage from '../utils/hooks/getErrorMessage';
 
 export default function LoginPage() {
     const { hasError } = useSelector((state: storeType) => state.user);
 
     useCleaner([{ check: !!hasError, action: () => setUserError(null) }]);
 
-    const sideContent = useSideContent({ error: { hasError, props: () => generateErrorMessage(hasError) } });
+    const sideContent = useSideContent({
+        error: {
+            hasError,
+            props: () =>
+                getErrorMessage(hasError, [
+                    ['unauthorizedError', alertMessage.loginError],
+                    ['serverError', alertMessage.serverError],
+                ]),
+        },
+    });
 
     if (sideContent) return <Container component={sideContent} />;
 
@@ -44,11 +54,4 @@ export default function LoginPage() {
             </Form>
         </UserForm>
     );
-}
-
-function generateErrorMessage(error: string | null) {
-    const res: { text: string } = { text: alertMessage.fetchError };
-    if (error === 'unauthorizedError') res.text = alertMessage.loginError;
-    if (error === 'serverError') res.text = alertMessage.serverError;
-    return res;
 }
