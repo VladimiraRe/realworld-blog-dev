@@ -3,10 +3,11 @@ import { format } from 'date-fns';
 import { v1 as uuidv1 } from 'uuid';
 
 import type { IArticle } from '../../type';
+import type { alertMessageKeysType } from '../Alert';
 import './ArticlesList.scss';
 import ArticleCard from '../Article/ArticleCard';
-import Alert, { alertMessage as alertMessageObj, getAlertMessage } from '../Alert';
-import type { alertMessageKeysType } from '../Alert';
+import Alert, { alertMessage, alertMessage as alertMessageObj } from '../Alert';
+import getErrorMessage from '../../utils/hooks/getErrorMessage';
 
 import useArticlesList from './useArticlesList';
 
@@ -21,8 +22,11 @@ export default function ArticlesList({ page, pageSize }: IArticlesList) {
     if (!data) return null;
 
     if (typeof data === 'string') {
-        const message = getAlertMessage(data, 'listOfArticles');
-        return <Alert message={message as string} type='warning' />;
+        const { text } = getErrorMessage(data, [
+            ['serverError', alertMessage.serverError],
+            ['notFoundError', alertMessage.notFoundError.listOfArticles],
+        ]);
+        return <Alert message={text} type='warning' />;
     }
 
     if (data.length === 0) return <Alert message={alertMessageObj.notFoundError.listOfArticles} type='warning' />;
