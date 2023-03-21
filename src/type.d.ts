@@ -28,6 +28,7 @@ const {
     updateUser,
     getUser,
     createArtile,
+    updateArtile,
     ...newRequestsActions
 } = requestsActions;
 

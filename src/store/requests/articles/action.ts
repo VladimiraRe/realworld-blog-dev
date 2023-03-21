@@ -26,14 +26,23 @@ export const getArticle = (slug: string) => async (dispatch: appDispatch) => {
 };
 
 export const createArtile = (articleData: INewArticle, token: string) => async (dispatch: appDispatch) => {
-    await postData(
+    await addData(
         () => api.createArtile(articleData, token),
         dispatch,
         (data) => setArticle({ article: { ...data }, isCreated: true })
     );
 };
 
-async function postData(fetch: () => Promise<unknown>, dispatch: appDispatch, setData: ActionCreator<unknown>) {
+export const updateArtile =
+    (articleData: INewArticle, token: string, slug: string) => async (dispatch: appDispatch) => {
+        await addData(
+            () => api.updateArtile(articleData, token, slug),
+            dispatch,
+            (data) => setArticle({ article: { ...data }, isChanged: true })
+        );
+    };
+
+async function addData(fetch: () => Promise<unknown>, dispatch: appDispatch, setData: ActionCreator<unknown>) {
     await fetchData(fetch, dispatch, setData, [{ error: UnauthorizedError, message: 'unauthorizedError' }]);
 }
 

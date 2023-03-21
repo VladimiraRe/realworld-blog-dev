@@ -10,9 +10,9 @@ import RegistrationPage from '../../pages/RegistrationPage';
 import LoginPage from '../../pages/LoginPage';
 import EditProfilePage from '../../pages/EditProfilePage';
 import Alert, { alertMessage, alertType } from '../Alert';
-import useSideContents from '../../utils/hooks/useSideContent';
-import useNetworkError from '../../errors/useNetworkError';
+import useNetworkError, { networkError } from '../../errors/useNetworkError';
 import CreateArticlePage from '../../pages/CreateArticlePage';
+import EditArticlePage from '../../pages/EditArticlePage';
 
 export default function App() {
     const { loggedIn } = useSelector((state: storeType) => state.user);
@@ -20,13 +20,8 @@ export default function App() {
 
     useNetworkError();
 
-    const sideContents = useSideContents({
-        error: {
-            hasError: Array.isArray(hasError) ? (hasError.at(-1) as string) : hasError,
-            props: () => generateErrorMessage(hasError as string[]),
-        },
-    });
-    if (sideContents) return <Container component={sideContents} />;
+    if (hasError && hasError[0] === networkError)
+        return <Container component={<Alert message={alertMessage.networkError} type='error' />} />;
 
     return (
         <div className='app'>
@@ -40,6 +35,7 @@ export default function App() {
                         render={() => (loggedIn ? <EditProfilePage /> : <Redirect to='/sign-in' />)}
                     />
                     <Route path='/sign-up' exact component={RegistrationPage} />
+                    <Route path='/articles/:slug/edit' exact component={EditArticlePage} />
                     <Route path='/articles/:slug' render={() => <Container component={<FullArticle />} />} />
                     <Route
                         path={['/', '/articles', '/articles/?page=']}
@@ -48,17 +44,14 @@ export default function App() {
                     />
                     <Route path='/new-article' exact component={CreateArticlePage} />
                     <Route
-                        render={() => <Alert message={alertMessage.notFoundError.page} type={alertType.warning} />}
+                        render={() => (
+                            <Container
+                                component={<Alert message={alertMessage.notFoundError.page} type={alertType.warning} />}
+                            />
+                        )}
                     />
                 </Switch>
             </BrowserRouter>
         </div>
     );
-}
-
-function generateErrorMessage(error: string[]) {
-    const res: { text: string } = { text: alertMessage.fetchError };
-    if (error.find((el) => el === 'networkError')) res.text = alertMessage.networkError;
-    if (error.find((el) => el === 'serverError')) res.text = alertMessage.serverError;
-    return res;
 }

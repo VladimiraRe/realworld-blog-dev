@@ -15,10 +15,12 @@ export default function ArticleBtns({ author }: IArticleBtns) {
 
     if (!loggedIn || loggedIn.username !== author) return null;
 
+    const editLink = `${history.location.pathname}/edit`;
+
     return (
         <div className='articleBtns'>
             <Button text='delete' type='alert' />
-            <Button text='edit' type='accent' onClick={() => history.push('/edit')} />
+            <Button text='edit' type='accent' onClick={() => history.push(editLink)} />
         </div>
     );
 }

@@ -1,4 +1,3 @@
-import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 
@@ -15,10 +14,8 @@ if (container) {
     if (token) store.dispatch(getUser(token));
 
     root.render(
-        <React.StrictMode>
-            <Provider store={store}>
-                <App />
-            </Provider>
-        </React.StrictMode>
+        <Provider store={store}>
+            <App />
+        </Provider>
     );
 }

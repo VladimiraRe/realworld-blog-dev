@@ -5,15 +5,15 @@ import type { appDispatch } from '../type';
 import setError from '../store/errors/action';
 import { setIsLoading } from '../store/requests/action';
 
+export const networkError = 'networkError';
+
 export default function useNetworkError() {
     const dispatch: appDispatch = useDispatch();
-
-    const error = 'networkError';
 
     const checkOnline = useCallback(
         () =>
             checkOnlineState(() => {
-                dispatch(setError(error));
+                dispatch(setError(networkError));
                 dispatch(setIsLoading(false));
             }),
         [dispatch]

@@ -1,5 +1,5 @@
 import type { IListOfArticles, IArticle, IUser, IUpdateUser, INewArticle } from '../type';
-import { FetchError, ServerError, UnauthorizedError, ReservedError } from '../errors/customErrors';
+import { FetchError, ServerError, UnauthorizedError, ReservedError, NotFoundError } from '../errors/customErrors';
 
 interface IParameters {
     [key: string]: string | number;
@@ -30,14 +30,26 @@ class Api {
     async getListOfArticles(offset = 0) {
         const LIMIT = 25;
         const request = 'articles';
-        const res = await this._get<IListOfArticles>({ request, props: { offset, limit: LIMIT } });
-        return { ...res, offset, hasError: false };
+        try {
+            const res = await this._get<IListOfArticles>({ request, props: { offset, limit: LIMIT } });
+            return { ...res, offset, hasError: false };
+        } catch (err: ReturnType<FetchError>) {
+            const { status }: { status: number; message: string } = err;
+            if (status === 404) throw new NotFoundError(status);
+            else throw err;
+        }
     }
 
     async getArticle(slug: string) {
         const request = `articles/${slug}`;
-        const { article } = await this._get<{ article: IArticle }>({ request });
-        return { article, hasError: false };
+        try {
+            const { article } = await this._get<{ article: IArticle }>({ request });
+            return { article, hasError: false };
+        } catch (err: ReturnType<FetchError>) {
+            const { status }: { status: number; message: string } = err;
+            if (status === 404) throw new NotFoundError(status);
+            else throw err;
+        }
     }
 
     async getUser(token: string) {
@@ -83,6 +95,14 @@ class Api {
         const body = { article: articleData };
         const headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
         const { article } = await this._change<{ article: IArticle }>('post', request, body, headers);
+        return article;
+    }
+
+    async updateArtile(articleData: INewArticle, token: string, slug: string) {
+        const request = `articles/${slug}`;
+        const body = { article: articleData };
+        const headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
+        const { article } = await this._change<{ article: IArticle }>('put', request, body, headers);
         return article;
     }
 
