@@ -5,7 +5,7 @@ import './Button.scss';
 interface IButton {
     text: string;
     type?: string;
-    onClick?: () => void;
+    onClick?: () => void | void;
     htmlType?: 'button' | 'submit' | 'reset';
 }
 

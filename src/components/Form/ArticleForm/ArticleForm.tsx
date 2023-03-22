@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Input } from 'antd';
 
 import useSideContents from '../../../utils/hooks/useSideContent';
-import useCleaner from '../../../utils/hooks/useCleaner';
 import { alertMessage } from '../../Alert';
 import { setArticle } from '../../../store/requests/action';
 import type { appDispatch, INewArticle, storeType } from '../../../type';
@@ -29,11 +29,14 @@ export default function ArticleForm({ action, check, values }: IArticleForm) {
     const { article, hasError, isCreated, isChanged } = useSelector((state: storeType) => state.article);
     const history = useHistory();
 
-    useCleaner([
-        { check: !!hasError, action: () => setArticle({ hasError: null }) },
-        { check: !!isCreated, action: () => setArticle({ isChanged: false }) },
-        { check: !!isChanged, action: () => setArticle({ isChanged: false }) },
-    ]);
+    useLayoutEffect(() => {
+        if (check && article?.slug) history.push(`/articles/${article?.slug}`);
+        return () => {
+            if (hasError) setArticle({ hasError: null });
+            if (isCreated) setArticle({ isCreated: false });
+            if (isChanged) setArticle({ isChanged: false });
+        };
+    }, [check, article, history, hasError, isCreated, isChanged]);
 
     const sideContent = useSideContents({
         error: {
@@ -44,14 +47,6 @@ export default function ArticleForm({ action, check, values }: IArticleForm) {
                     ['serverError', alertMessage.serverError],
                 ]),
         },
-        other: [
-            {
-                check: !!(check && article?.slug),
-                action: () => {
-                    history.replace(`/articles/${article?.slug}`);
-                },
-            },
-        ],
     });
     if (sideContent) return <Container component={sideContent} />;
 
@@ -61,7 +56,7 @@ export default function ArticleForm({ action, check, values }: IArticleForm) {
     const initial: { [key: string]: string | (string | null)[] | null } = {};
     names.forEach((name) => {
         // eslint-disable-next-line no-unused-expressions
-        name === 'tagList' ? (initial.tagList = tagList) : (initial[name] = values![name] || null);
+        name === 'tagList' ? (initial.tagList = tagList) : (initial[name] = values ? values[name] : null);
     });
 
     return (

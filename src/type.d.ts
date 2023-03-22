@@ -29,6 +29,7 @@ const {
     getUser,
     createArtile,
     updateArtile,
+    deleteArticle,
     ...newRequestsActions
 } = requestsActions;
 
@@ -83,6 +84,7 @@ export interface IStateArticle {
     hasError: string | null;
     isChanged: boolean;
     isCreated: boolean;
+    isDeleted: boolean;
 }
 
 export interface IListOfArticles {

@@ -16,7 +16,7 @@ interface ILogin {
 
 export default function LoggedIn({ loggedIn }: ILogin) {
     const dispatch = useDispatch();
-    const { replace } = useHistory();
+    const { push } = useHistory();
 
     const logOut = () => {
         document.cookie = 'token=""; max-age=0';
@@ -25,7 +25,7 @@ export default function LoggedIn({ loggedIn }: ILogin) {
 
     return (
         <>
-            <Button text='create article' type='accent' onClick={() => replace('/new-article')} />
+            <Button text='create article' type='accent' onClick={() => push('/new-article')} />
             <Link to='/profile'>
                 <Author data={{ username: loggedIn.username, image: loggedIn.image || image }} />
             </Link>

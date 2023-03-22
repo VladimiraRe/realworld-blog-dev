@@ -10,14 +10,14 @@ interface IBody {
 }
 
 interface IFetchProps {
-    method?: 'get' | 'post' | 'put';
+    method?: 'get' | 'post' | 'put' | 'delete';
     request: string;
     body?: IBody;
     headers?: { [key: string]: string };
 }
 
 interface IFetch {
-    method?: 'get' | 'post' | 'put';
+    method?: 'get' | 'post' | 'put' | 'delete';
     headers?: Headers;
     body?: string;
 }
@@ -106,6 +106,13 @@ class Api {
         return article;
     }
 
+    async deleteArtile(token: string, slug: string) {
+        const request = `articles/${slug}`;
+        const headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
+        await this._change<{ article: IArticle }>('delete', request, undefined, headers);
+        return true;
+    }
+
     async _get<T>({
         request,
         props,
@@ -128,10 +135,16 @@ class Api {
         return res as T;
     }
 
-    async _change<T>(method: 'post' | 'put', request: string, body: IBody, headers?: { [key: string]: string }) {
+    async _change<T>(
+        method: 'post' | 'put' | 'delete',
+        request: string,
+        body?: IBody,
+        headers?: { [key: string]: string }
+    ) {
         const url = this._BASE_URL + request;
 
-        const parameters: IFetchProps = { method, request: url, body };
+        const parameters: IFetchProps = { method, request: url };
+        if (body) parameters.body = body;
         if (headers) parameters.headers = headers;
         const res = Api._fetch(parameters);
         return res as T;
@@ -149,7 +162,7 @@ class Api {
 
         if (body) parameters.body = JSON.stringify(body);
 
-        let res = await fetch(request, parameters);
+        let res: Response | string = await fetch(request, parameters);
 
         if (!res.ok) {
             const answer = await res.text();
@@ -158,7 +171,8 @@ class Api {
             throw new FetchError(res.status, answer);
         }
 
-        res = await res.json();
+        res = await res.text();
+        res = res ? await JSON.parse(res) : true;
         return res as T;
     }
 }

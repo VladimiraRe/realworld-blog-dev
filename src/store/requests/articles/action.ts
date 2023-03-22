@@ -12,67 +12,104 @@ export const setListOfArticles = (listOfArticles: IListOfArticles) => ({
     listOfArticles,
 });
 
-export const setArticle = (articleData: Partial<IStateArticle>) => ({
-    type: 'SET_ARTICLE' as const,
-    articleData,
-});
+export const setArticle = (articleData: Partial<IStateArticle>) => {
+    return {
+        type: 'SET_ARTICLE' as const,
+        articleData,
+    };
+};
 
 export const getListOfArticles = (offset?: number) => async (dispatch: appDispatch) => {
-    await getData(() => api.getListOfArticles(offset), dispatch, setListOfArticles);
+    await getData(() => api.getListOfArticles(offset), dispatch, { setData: setListOfArticles, setIsLoading });
 };
 
 export const getArticle = (slug: string) => async (dispatch: appDispatch) => {
-    await getData(() => api.getArticle(slug), dispatch, setArticle);
+    await getData(() => api.getArticle(slug), dispatch, { setData: setArticle, setIsLoading });
 };
 
 export const createArtile = (articleData: INewArticle, token: string) => async (dispatch: appDispatch) => {
-    await addData(
-        () => api.createArtile(articleData, token),
-        dispatch,
-        (data) => setArticle({ article: { ...data }, isCreated: true })
-    );
+    await changeData(() => api.createArtile(articleData, token), dispatch, {
+        setData: (data) => setArticle({ article: { ...data }, isCreated: true }),
+        setError: setArticle,
+        setIsLoading,
+    });
 };
 
 export const updateArtile =
     (articleData: INewArticle, token: string, slug: string) => async (dispatch: appDispatch) => {
-        await addData(
-            () => api.updateArtile(articleData, token, slug),
-            dispatch,
-            (data) => setArticle({ article: { ...data }, isChanged: true })
-        );
+        await changeData(() => api.updateArtile(articleData, token, slug), dispatch, {
+            setData: (data) => setArticle({ article: { ...data }, isChanged: true }),
+            setError: setArticle,
+            setIsLoading,
+        });
     };
 
-async function addData(fetch: () => Promise<unknown>, dispatch: appDispatch, setData: ActionCreator<unknown>) {
-    await fetchData(fetch, dispatch, setData, [{ error: UnauthorizedError, message: 'unauthorizedError' }]);
+export const deleteArticle = (token: string, slug: string) => async (dispatch: appDispatch) => {
+    const res = await changeData(() => api.deleteArtile(token, slug), dispatch, {
+        setData: () => setArticle({ article: null, isDeleted: true }),
+        setError: setArticle,
+    });
+    return res;
+};
+
+async function changeData(
+    fetch: () => Promise<unknown>,
+    dispatch: appDispatch,
+    actions: {
+        setData: ActionCreator<unknown>;
+        setError?: ActionCreator<unknown>;
+        setIsLoading?: ActionCreator<unknown>;
+    }
+) {
+    const res = await fetchData(fetch, dispatch, actions, [{ error: UnauthorizedError, message: 'unauthorizedError' }]);
+    return res;
 }
 
-async function getData(fetch: () => Promise<unknown>, dispatch: appDispatch, setData: ActionCreator<unknown>) {
-    await fetchData(fetch, dispatch, setData, [{ error: NotFoundError, message: 'notFoundError' }]);
+async function getData(
+    fetch: () => Promise<unknown>,
+    dispatch: appDispatch,
+    actions: {
+        setData: ActionCreator<unknown>;
+        setError?: ActionCreator<unknown>;
+        setIsLoading?: ActionCreator<unknown>;
+    }
+) {
+    await fetchData(fetch, dispatch, actions, [{ error: NotFoundError, message: 'notFoundError' }]);
 }
 
 async function fetchData(
     fetch: () => Promise<unknown>,
     dispatch: appDispatch,
-    setData: ActionCreator<unknown>,
+    actions: {
+        setData: ActionCreator<unknown>;
+        setError?: ActionCreator<unknown>;
+        setIsLoading?: ActionCreator<unknown>;
+    },
     errors: { error: typeof FetchError; message: string }[]
 ) {
-    const dispatchAction = bindActionCreators({ setData, setIsLoading }, dispatch);
-    dispatchAction.setIsLoading(true);
+    const dispatchAction = bindActionCreators(actions, dispatch);
+
+    if (!dispatchAction.setError) dispatchAction.setError = dispatchAction.setData;
+
+    if (dispatchAction.setIsLoading) dispatchAction.setIsLoading(true);
 
     try {
         const data = await fetch();
         dispatchAction.setData(data);
+        return true;
     } catch (err) {
         let isFindErr = false;
         // eslint-disable-next-line no-restricted-syntax
         for (const { error, message } of errors) {
             if (err instanceof error) {
-                dispatchAction.setData({ hasError: message });
+                dispatchAction.setError({ hasError: message });
                 isFindErr = true;
             }
         }
-        if (!isFindErr) dispatchAction.setData({ hasError: err instanceof ServerError ? 'serverError' : 'fetchError' });
+        if (!isFindErr)
+            dispatchAction.setError({ hasError: err instanceof ServerError ? 'serverError' : 'fetchError' });
+        return false;
     } finally {
-        dispatch(setIsLoading(false));
+        if (dispatchAction.setIsLoading) dispatchAction.setIsLoading(false);
     }
 }

@@ -10,10 +10,9 @@ import getErrorMessage from '../../../utils/hooks/getErrorMessage';
 import Alert, { alertMessage, alertType } from '../../Alert';
 import type { storeType } from '../../../type';
 import useSideContents from '../../../utils/hooks/useSideContent';
-import Container from '../../../containers/Container';
 
 export default function FullArticle() {
-    const { hasError } = useSelector((state: storeType) => state.article);
+    const { hasError, isDeleted } = useSelector((state: storeType) => state.article);
     const history = useHistory();
     const linkSlug = history.location.pathname
         .split('/')
@@ -33,12 +32,16 @@ export default function FullArticle() {
         },
         other: [
             {
+                check: isDeleted,
+                component: <Alert message={alertMessage.successful('Deleting an article')} type='success' />,
+            },
+            {
                 check: !article || Object.keys(article).length === 0,
                 component: <Alert message={alertMessage.notFoundError.article} type={alertType.warning} />,
             },
         ],
     });
-    if (sideContent) return <Container component={sideContent} />;
+    if (sideContent) return sideContent;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const { body, ...data } = article!;

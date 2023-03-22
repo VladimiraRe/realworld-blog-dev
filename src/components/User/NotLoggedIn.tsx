@@ -5,7 +5,7 @@ import Button from '../Button';
 export default function NotLoggedIn() {
     const history = useHistory();
 
-    const signUp = () => history.replace('/sign-up');
+    const signUp = () => history.push('/sign-up');
 
     return (
         <>

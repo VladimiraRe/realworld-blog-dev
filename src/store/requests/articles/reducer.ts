@@ -1,7 +1,7 @@
 import type { actionsType, IListOfArticles, IStateArticle } from '../../../type';
 
 const initialListOfArticles = { articles: null, articlesCount: null, offset: null, hasError: null };
-const initialArticle = { article: null, hasError: null, isChanged: false, isCreated: false };
+const initialArticle = { article: null, hasError: null, isChanged: false, isCreated: false, isDeleted: false };
 
 export function listOfArticles(state: IListOfArticles = initialListOfArticles, action: actionsType) {
     switch (action.type) {
