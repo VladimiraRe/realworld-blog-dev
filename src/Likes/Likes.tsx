@@ -15,7 +15,7 @@ type returnType = ReturnType<typeof favoriteArticle | typeof unfavoriteArticle>;
 
 export default function Likes({ slug, inx }: ILikes) {
     const { favoritesCount, favorited } = useSelector((state: rootState) => {
-        if (!inx) {
+        if (!inx && inx !== 0) {
             const { article } = state.article;
             return { favoritesCount: article?.favoritesCount, favorited: article?.favorited };
         }
@@ -37,7 +37,7 @@ export default function Likes({ slug, inx }: ILikes) {
         if (!loggedIn) return;
         const action = favorited ? unfavoriteArticle : favoriteArticle;
         const values: [string, string, number?] = [loggedIn.token as string, slug];
-        if (inx) values.push(inx);
+        if (inx !== undefined) values.push(inx);
         dispatch(action(...values));
     };
 

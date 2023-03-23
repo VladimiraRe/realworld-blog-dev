@@ -7,7 +7,7 @@ export function listOfArticles(state: IListOfArticles = initialListOfArticles, a
     switch (action.type) {
         case 'SET_LIST_OF_ARTICLES': {
             const { listOfArticles: data } = action;
-            if (data.index && data.article && state.articles) {
+            if (data.index !== undefined && data.article && state.articles) {
                 const articles = state.articles.map((el, inx) =>
                     inx === data.index ? { ...data.article } : el
                 ) as IArticle[];
