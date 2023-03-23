@@ -22,10 +22,12 @@ export default function ArticleHeader({ isPage, data, slug, inx }: IArticleHeade
 
     let maxTag = 11;
     let shortTitle: string | null = null;
+    let shortDescription: string | null = null;
     if (!isPage) {
         className.push('article__header--preview');
         maxTag = 4;
         shortTitle = checkLength(title, 20);
+        shortDescription = checkLength(title, 100);
     }
 
     const tags = tagList.slice(0, maxTag).map((tag) => {
@@ -45,7 +47,7 @@ export default function ArticleHeader({ isPage, data, slug, inx }: IArticleHeade
                     {tags}
                     {tagList.length > 5 && <span>...</span>}
                 </div>
-                <p className='article__description'>{description}</p>
+                <p className='article__description'>{shortDescription || description}</p>
             </div>
             <div>
                 <Author data={author}>
