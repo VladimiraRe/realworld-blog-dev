@@ -9,7 +9,7 @@ export function listOfArticles(state: IListOfArticles = initialListOfArticles, a
             const { listOfArticles: data } = action;
             if (data.index && data.article && state.articles) {
                 const articles = state.articles.map((el, inx) =>
-                    inx === data.index ? data.article : el
+                    inx === data.index ? { ...data.article } : el
                 ) as IArticle[];
                 return { ...state, articles };
             }

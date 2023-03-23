@@ -127,14 +127,14 @@ class Api {
         const request = `articles/${slug}/favorite`;
         const headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
         const { article } = await this._change<{ article: IArticle }>('post', request, undefined, headers);
-        return { article };
+        return article;
     }
 
     async unfavoriteArticle(token: string, slug: string) {
         const request = `articles/${slug}/favorite`;
         const headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
         const { article } = await this._change<{ article: IArticle }>('delete', request, undefined, headers);
-        return { article };
+        return article;
     }
 
     async _get<T>({ request, props, headers }: IGet) {

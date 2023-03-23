@@ -59,14 +59,18 @@ export const deleteArticle = (token: string, slug: string) => async (dispatch: a
 
 export const favoriteArticle = (token: string, slug: string, index?: number) => async (dispatch: appDispatch) => {
     const res = await changeData(() => api.favoriteArticle(token, slug), dispatch, {
-        setData: !index ? setArticle : (article: IArticle) => setListOfArticles({ article, index }),
+        setData: !index
+            ? (article: IArticle) => setArticle({ article })
+            : (article: IArticle) => setListOfArticles({ article, index }),
     });
     return res;
 };
 
 export const unfavoriteArticle = (token: string, slug: string, index?: number) => async (dispatch: appDispatch) => {
     const res = await changeData(() => api.unfavoriteArticle(token, slug), dispatch, {
-        setData: !index ? setArticle : (article: IArticle) => setListOfArticles({ article, index }),
+        setData: !index
+            ? (article: IArticle) => setArticle({ article })
+            : (article: IArticle) => setListOfArticles({ article, index }),
     });
     return res;
 };
