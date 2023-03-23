@@ -30,6 +30,8 @@ const {
     createArtile,
     updateArtile,
     deleteArticle,
+    favoriteArticle,
+    unfavoriteArticle,
     ...newRequestsActions
 } = requestsActions;
 

@@ -1,0 +1,16 @@
+@import '../assets/scss/vars';
+
+.likes button {
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    line-height: 0;
+}
+.likes--favorited {
+    & button > svg > path {
+        fill: $alertColor;
+    }
+    & span {
+        color: $alertColor;
+    }
+}

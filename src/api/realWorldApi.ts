@@ -22,16 +22,24 @@ interface IFetch {
     body?: string;
 }
 
+interface IGet {
+    request: string;
+    props?: IParameters;
+    headers?: { [key: string]: string };
+}
+
 const BASE_URL = ['https://blog.kata.academy/api/', 'https://api.realworld.io/api/'];
 
 class Api {
     _BASE_URL = BASE_URL[0];
 
-    async getListOfArticles(offset = 0) {
+    async getListOfArticles(offset = 0, token?: string) {
         const LIMIT = 25;
         const request = 'articles';
+        const fetchValues: IGet = { request, props: { offset, limit: LIMIT } };
+        if (token) fetchValues.headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
         try {
-            const res = await this._get<IListOfArticles>({ request, props: { offset, limit: LIMIT } });
+            const res = await this._get<IListOfArticles>(fetchValues);
             return { ...res, offset, hasError: false };
         } catch (err: ReturnType<FetchError>) {
             const { status }: { status: number; message: string } = err;
@@ -40,10 +48,12 @@ class Api {
         }
     }
 
-    async getArticle(slug: string) {
+    async getArticle(slug: string, token?: string) {
         const request = `articles/${slug}`;
+        const fetchValues: IGet = { request };
+        if (token) fetchValues.headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
         try {
-            const { article } = await this._get<{ article: IArticle }>({ request });
+            const { article } = await this._get<{ article: IArticle }>(fetchValues);
             return { article, hasError: false };
         } catch (err: ReturnType<FetchError>) {
             const { status }: { status: number; message: string } = err;
@@ -90,7 +100,7 @@ class Api {
         return user;
     }
 
-    async createArtile(articleData: INewArticle, token: string) {
+    async createArticle(articleData: INewArticle, token: string) {
         const request = 'articles';
         const body = { article: articleData };
         const headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
@@ -98,7 +108,7 @@ class Api {
         return article;
     }
 
-    async updateArtile(articleData: INewArticle, token: string, slug: string) {
+    async updateArticle(articleData: INewArticle, token: string, slug: string) {
         const request = `articles/${slug}`;
         const body = { article: articleData };
         const headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
@@ -106,22 +116,28 @@ class Api {
         return article;
     }
 
-    async deleteArtile(token: string, slug: string) {
+    async deleteArticle(token: string, slug: string) {
         const request = `articles/${slug}`;
         const headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
         await this._change<{ article: IArticle }>('delete', request, undefined, headers);
         return true;
     }
 
-    async _get<T>({
-        request,
-        props,
-        headers,
-    }: {
-        request: string;
-        props?: IParameters;
-        headers?: { [key: string]: string };
-    }) {
+    async favoriteArticle(token: string, slug: string) {
+        const request = `articles/${slug}/favorite`;
+        const headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
+        const { article } = await this._change<{ article: IArticle }>('post', request, undefined, headers);
+        return { article };
+    }
+
+    async unfavoriteArticle(token: string, slug: string) {
+        const request = `articles/${slug}/favorite`;
+        const headers = { 'X-Requested-With': 'XMLHttpRequest', Authorization: `Token ${token}` };
+        const { article } = await this._change<{ article: IArticle }>('delete', request, undefined, headers);
+        return { article };
+    }
+
+    async _get<T>({ request, props, headers }: IGet) {
         const parameters: IFetchProps = { request: this._BASE_URL + request };
         if (props)
             parameters.request += `?${Object.keys(props)

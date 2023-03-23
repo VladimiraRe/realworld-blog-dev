@@ -6,18 +6,19 @@ import { getArticle, setArticle, setIsLoading } from '../../store/requests/actio
 
 export default function useArticle(linkSlug: string) {
     const { article, hasError, isDeleted } = useSelector((state: storeType) => state.article);
+    const token = useSelector((state: storeType) => state.user.loggedIn?.token);
     const isLoading = useSelector((state: storeType) => state.isLoading);
     const dispatch: appDispatch = useDispatch();
 
     useEffect(() => {
         if (!hasError && !isDeleted && (!article || (Object.keys(article).length !== 0 && article.slug !== linkSlug)))
-            dispatch(getArticle(linkSlug));
+            dispatch(getArticle(linkSlug, token));
         return () => {
             if (isLoading) dispatch(setIsLoading(false));
             if (hasError) dispatch(setArticle({ hasError: null }));
             if (isDeleted) dispatch(setArticle({ isDeleted: false }));
         };
-    }, [article, dispatch, linkSlug, isLoading, hasError, isDeleted]);
+    }, [article, dispatch, linkSlug, isLoading, hasError, isDeleted, token]);
 
     return article;
 }

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { format } from 'date-fns';
 import { v1 as uuidv1 } from 'uuid';
 
@@ -16,8 +16,15 @@ interface IArticlesList {
     pageSize: number;
 }
 
+interface IData {
+    cutArticles: IArticle[];
+    startInx: number;
+}
+
 export default function ArticlesList({ page, pageSize }: IArticlesList) {
-    const data: IArticle[] | alertMessageKeysType | null = useArticlesList(page, pageSize);
+    const history = useHistory();
+
+    const data: IData | null | alertMessageKeysType = useArticlesList(page, pageSize);
 
     if (!data) return null;
 
@@ -29,16 +36,23 @@ export default function ArticlesList({ page, pageSize }: IArticlesList) {
         return <Alert message={text} type='warning' />;
     }
 
-    if (data.length === 0) return <Alert message={alertMessageObj.notFoundError.listOfArticles} type='warning' />;
+    const { cutArticles, startInx } = data;
 
-    const articlesItems = data.map(({ slug, ...article }) => {
+    if (cutArticles.length === 0)
+        return <Alert message={alertMessageObj.notFoundError.listOfArticles} type='warning' />;
+
+    const onClick = (slug: string) => {
+        history.push(`articles/${slug}`);
+    };
+
+    const articlesItems = cutArticles.map(({ slug, ...article }, inx) => {
         let { createdAt } = article;
         createdAt = format(new Date(createdAt), 'PP');
         return (
             <li key={uuidv1()}>
-                <Link to={({ pathname }) => `${pathname === '/articles' ? pathname : '/articles'}/${slug}`}>
-                    <ArticleCard data={{ ...article, createdAt }} />
-                </Link>
+                <div role='presentation' onClick={() => onClick(slug)}>
+                    <ArticleCard data={{ ...article, createdAt }} slug={slug} inx={startInx + inx} />
+                </div>
             </li>
         );
     });

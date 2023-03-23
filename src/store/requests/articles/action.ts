@@ -1,13 +1,18 @@
 import type { ActionCreator } from 'redux';
 import { bindActionCreators } from 'redux';
 
-import type { IListOfArticles, IStateArticle, appDispatch, INewArticle } from '../../../type';
+import type { IListOfArticles, IStateArticle, appDispatch, INewArticle, IArticle } from '../../../type';
 import api from '../../../api/realWorldApi';
 import { setIsLoading } from '../action';
 import type { FetchError } from '../../../errors/customErrors';
 import { NotFoundError, ServerError, UnauthorizedError } from '../../../errors/customErrors';
 
-export const setListOfArticles = (listOfArticles: IListOfArticles) => ({
+interface INewListOfArticles extends Partial<IListOfArticles> {
+    article?: IArticle;
+    index?: number;
+}
+
+export const setListOfArticles = (listOfArticles: INewListOfArticles) => ({
     type: 'SET_LIST_OF_ARTICLES' as const,
     listOfArticles,
 });
@@ -19,16 +24,16 @@ export const setArticle = (articleData: Partial<IStateArticle>) => {
     };
 };
 
-export const getListOfArticles = (offset?: number) => async (dispatch: appDispatch) => {
-    await getData(() => api.getListOfArticles(offset), dispatch, { setData: setListOfArticles, setIsLoading });
+export const getListOfArticles = (offset?: number, token?: string) => async (dispatch: appDispatch) => {
+    await getData(() => api.getListOfArticles(offset, token), dispatch, { setData: setListOfArticles, setIsLoading });
 };
 
-export const getArticle = (slug: string) => async (dispatch: appDispatch) => {
-    await getData(() => api.getArticle(slug), dispatch, { setData: setArticle, setIsLoading });
+export const getArticle = (slug: string, token?: string) => async (dispatch: appDispatch) => {
+    await getData(() => api.getArticle(slug, token), dispatch, { setData: setArticle, setIsLoading });
 };
 
 export const createArtile = (articleData: INewArticle, token: string) => async (dispatch: appDispatch) => {
-    await changeData(() => api.createArtile(articleData, token), dispatch, {
+    await changeData(() => api.createArticle(articleData, token), dispatch, {
         setData: (data) => setArticle({ article: { ...data }, isCreated: true }),
         setError: setArticle,
         setIsLoading,
@@ -37,7 +42,7 @@ export const createArtile = (articleData: INewArticle, token: string) => async (
 
 export const updateArtile =
     (articleData: INewArticle, token: string, slug: string) => async (dispatch: appDispatch) => {
-        await changeData(() => api.updateArtile(articleData, token, slug), dispatch, {
+        await changeData(() => api.updateArticle(articleData, token, slug), dispatch, {
             setData: (data) => setArticle({ article: { ...data }, isChanged: true }),
             setError: setArticle,
             setIsLoading,
@@ -45,9 +50,23 @@ export const updateArtile =
     };
 
 export const deleteArticle = (token: string, slug: string) => async (dispatch: appDispatch) => {
-    const res = await changeData(() => api.deleteArtile(token, slug), dispatch, {
+    const res = await changeData(() => api.deleteArticle(token, slug), dispatch, {
         setData: () => setArticle({ article: null, isDeleted: true }),
         setError: setArticle,
+    });
+    return res;
+};
+
+export const favoriteArticle = (token: string, slug: string, index?: number) => async (dispatch: appDispatch) => {
+    const res = await changeData(() => api.favoriteArticle(token, slug), dispatch, {
+        setData: !index ? setArticle : (article: IArticle) => setListOfArticles({ article, index }),
+    });
+    return res;
+};
+
+export const unfavoriteArticle = (token: string, slug: string, index?: number) => async (dispatch: appDispatch) => {
+    const res = await changeData(() => api.unfavoriteArticle(token, slug), dispatch, {
+        setData: !index ? setArticle : (article: IArticle) => setListOfArticles({ article, index }),
     });
     return res;
 };
