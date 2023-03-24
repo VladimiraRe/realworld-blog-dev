@@ -30,3 +30,9 @@ export class ReservedError extends FetchError {
         super(status, 'reserved error');
     }
 }
+
+export class InvalidDataError extends FetchError {
+    constructor(status: number) {
+        super(status, 'invalid data error');
+    }
+}

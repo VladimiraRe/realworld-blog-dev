@@ -1,5 +1,11 @@
 import type { Rule } from 'antd/es/form';
 
+interface ICheck {
+    hasError: boolean;
+    prevValue: string | null;
+}
+export type userFuncRulesType = (check: ICheck, message: string) => Rule[];
+
 const userRules: { [key: string]: Rule[] } = {
     username: [
         {

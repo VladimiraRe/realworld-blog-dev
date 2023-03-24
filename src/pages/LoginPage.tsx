@@ -1,55 +1,92 @@
+import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Input } from 'antd';
+import { useForm } from 'antd/es/form/Form';
 
-import type { storeType } from '../type';
+import type { IInitial, storeType } from '../type';
 import { login, setUserError } from '../store/requests/action';
 import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
 import useCleaner from '../utils/hooks/useCleaner';
-import useSideContent from '../utils/hooks/useSideContent';
-import { alertMessage } from '../components/Alert';
+import Alert, { alertMessage } from '../components/Alert';
 import getErrorMessage from '../utils/hooks/getErrorMessage';
+
+interface IState extends IInitial {
+    email: string | null;
+    password: string | null;
+}
 
 export default function LoginPage() {
     const { hasError } = useSelector((state: storeType) => state.user);
 
+    const [form] = useForm();
+
+    const prevValues = useRef({ email: null, password: null } as IState);
+
+    const [isInvalidDataError, setIsInvalidDataError] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (hasError === 'invalidDataError' && !isInvalidDataError) {
+            setIsInvalidDataError(true);
+        }
+        if (isInvalidDataError) {
+            setIsLoading(false);
+            form.validateFields();
+        }
+    }, [hasError, form, isInvalidDataError]);
+
     useCleaner([{ check: !!hasError, action: () => setUserError(null) }]);
 
-    const sideContent = useSideContent({
-        error: {
-            hasError,
-            props: () =>
-                getErrorMessage(hasError, [
-                    ['unauthorizedError', alertMessage.loginError],
-                    ['serverError', alertMessage.serverError],
-                ]),
-        },
-    });
-
-    if (sideContent) return <Container component={sideContent} />;
+    if (hasError && !isInvalidDataError) {
+        const { text, type } = getErrorMessage(hasError, [
+            ['unauthorizedError', alertMessage.loginError],
+            ['serverError', alertMessage.serverError],
+        ]);
+        return <Container component={<Alert message={text} type={type || 'error'} />} />;
+    }
 
     const names = ['email', 'password'];
 
-    const initial: { [key: string]: string | null } = {};
-    names.forEach((name) => {
-        initial[name] = null;
-    });
+    const checkField = () => {
+        if (isInvalidDataError) {
+            const { email, password } = form.getFieldsValue(['email', 'password']);
+            if (email === prevValues.current.email && password === prevValues.current.password)
+                return Promise.reject(new Error(alertMessage.invalidDataError));
+        }
+        return Promise.resolve();
+    };
 
     return (
         <UserForm promptText="Don't have an account?" promptLink={{ text: 'Sign Up', link: '/sign-up' }}>
-            <Form title='sign in' btnText='login' action={login} initial={initial}>
+            <Form
+                title='sign in'
+                btnText='login'
+                action={login}
+                initial={prevValues.current}
+                onFinish={(values) => {
+                    prevValues.current = values as IState;
+                    setIsInvalidDataError(false);
+                    setIsLoading(true);
+                }}
+                form={form}
+                loading={isLoading}
+                disabled={isLoading}
+            >
                 <FormItem
                     name={names[0]}
                     label='email address'
-                    rules={userRules.email}
+                    rules={[...userRules.email, { validator: checkField }]}
                     component={<Input placeholder={names[0]} />}
+                    dependencies={[names[1]]}
                 />
                 <FormItem
                     name={names[1]}
                     label={names[1]}
-                    rules={userRules.password}
+                    rules={[...userRules.password, { validator: checkField }]}
                     component={<Input.Password placeholder={names[1]} />}
+                    dependencies={[names[0]]}
                 />
             </Form>
         </UserForm>

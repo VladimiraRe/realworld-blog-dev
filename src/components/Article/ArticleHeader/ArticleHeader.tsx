@@ -6,7 +6,7 @@ import type { IArticleCard } from '../../../type';
 import Author from '../../Author';
 import './ArticleHeader.scss';
 import ArticleBtns from '../ArticleBtns';
-import Likes from '../../../Likes';
+import Likes from '../../Likes';
 
 interface IArticleHeader {
     isPage: boolean;

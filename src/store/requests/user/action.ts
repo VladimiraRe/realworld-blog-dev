@@ -4,7 +4,7 @@ import api from '../../../api/realWorldApi';
 import { setIsDataUpdate, setIsLoading } from '../action';
 import type { actionsType, appDispatch, IUser, IUpdateUser } from '../../../type';
 import type { FetchError } from '../../../errors/customErrors';
-import { ReservedError, ServerError, UnauthorizedError } from '../../../errors/customErrors';
+import { InvalidDataError, ReservedError, ServerError, UnauthorizedError } from '../../../errors/customErrors';
 
 export const setLoggedIn = (user: IUser | null) => ({
     type: 'SET_LOGGED_IN' as const,
@@ -71,10 +71,16 @@ export const login =
             dispatch,
             (res: IUser) => setLoggedIn(res),
             () => api.login({ email, password }) as Promise<IReturnedUser>,
-            {
-                error: UnauthorizedError,
-                message: 'unauthorizedError',
-            }
+            [
+                {
+                    error: UnauthorizedError,
+                    message: 'unauthorizedError',
+                },
+                {
+                    error: InvalidDataError,
+                    message: 'invalidDataError',
+                },
+            ]
         );
 
         if (user) {
@@ -98,11 +104,19 @@ export const updateUser = (newUser: IUpdateUser) => async (dispatch: appDispatch
     dispatch(setIsDataUpdate(true));
 };
 
+interface ICustomError {
+    error: typeof FetchError;
+    message?: string;
+    action?: () => void;
+}
+
+type userActionErrorsType = ICustomError | ICustomError[] | null;
+
 async function userAction<T>(
     dispatch: appDispatch,
     action: (res: T) => actionsType,
     method: () => Promise<T>,
-    error: { error: typeof FetchError; message?: string; action?: () => void } | null
+    errors: userActionErrorsType
 ) {
     const boundActions = bindActionCreators({ action, setUserError, setIsLoading }, dispatch);
 
@@ -113,7 +127,7 @@ async function userAction<T>(
         boundActions.action(res);
         return res;
     } catch (err) {
-        return handleError(err, error, boundActions.setUserError);
+        return handleError(err, errors, boundActions.setUserError);
     } finally {
         boundActions.setIsLoading(false);
     }
@@ -121,16 +135,24 @@ async function userAction<T>(
 
 function handleError(
     err: unknown,
-    compareErr: { error: typeof FetchError; message?: string; action?: () => void } | null,
+    compareErr: userActionErrorsType,
     setError: (error: string | null) => { type: 'SET_USER_ERROR'; error: string | null }
 ): false {
     if (!compareErr) return false;
     let errMessage: string | null = 'fetchError';
     if (err instanceof ServerError) errMessage = 'serverError';
-    if (err instanceof compareErr.error) {
-        errMessage = compareErr.message || null;
-        if (compareErr.action) compareErr.action();
+    if (!Array.isArray(compareErr) && err instanceof compareErr.error) {
+        errMessage = getErrMessage(compareErr);
+    }
+    if (Array.isArray(compareErr)) {
+        const findErr = compareErr.find((errObj) => err instanceof errObj.error);
+        if (findErr) errMessage = getErrMessage(findErr);
     }
     if (errMessage) setError(errMessage);
     return false;
+
+    function getErrMessage(errObj: ICustomError) {
+        if (errObj.action) errObj.action();
+        return errObj.message || null;
+    }
 }

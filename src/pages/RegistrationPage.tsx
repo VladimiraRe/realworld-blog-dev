@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Input, Checkbox } from 'antd';
+import type { Rule } from 'antd/es/form';
 
 import type { storeType } from '../type';
 import { userRules } from '../utils/helpers/validation.helpers';
@@ -56,28 +57,28 @@ export default function RegistrationPage() {
                 <FormItem
                     name={names[0]}
                     label={names[0]}
-                    rules={userRules.username}
+                    rules={userRules.username as Rule[]}
                     hasFeedback
                     component={<Input placeholder={names[0]} />}
                 />
                 <FormItem
                     name={names[1]}
                     label={names[1]}
-                    rules={userRules.email}
+                    rules={userRules.email as Rule[]}
                     hasFeedback
                     component={<Input placeholder={names[1]} />}
                 />
                 <FormItem
                     name={names[2]}
                     label={names[2]}
-                    rules={userRules.password}
+                    rules={userRules.password as Rule[]}
                     hasFeedback
                     component={<Input.Password placeholder={names[2]} />}
                 />
                 <FormItem
                     name={names[3]}
                     label={names[3]}
-                    rules={userRules.repeatPassword}
+                    rules={userRules.repeatPassword as Rule[]}
                     dependencies={[names[2]]}
                     hasFeedback
                     component={<Input.Password placeholder={names[3]} />}
@@ -85,7 +86,7 @@ export default function RegistrationPage() {
                 <hr />
                 <FormItem
                     name={names[4]}
-                    rules={userRules.agreement}
+                    rules={userRules.agreement as Rule[]}
                     valuePropName='checked'
                     component={<Checkbox>I agree to the processing of my personal information</Checkbox>}
                 />

@@ -1,5 +1,12 @@
 import type { IListOfArticles, IArticle, IUser, IUpdateUser, INewArticle } from '../type';
-import { FetchError, ServerError, UnauthorizedError, ReservedError, NotFoundError } from '../errors/customErrors';
+import {
+    FetchError,
+    ServerError,
+    UnauthorizedError,
+    ReservedError,
+    NotFoundError,
+    InvalidDataError,
+} from '../errors/customErrors';
 
 interface IParameters {
     [key: string]: string | number;
@@ -84,8 +91,14 @@ class Api {
     async login(userObj: { email: string; password: string }) {
         const request = 'users/login';
         const body = { user: userObj };
-        const { user } = await this._change<{ user: IUser }>('post', request, body);
-        return user;
+        try {
+            const { user } = await this._change<{ user: IUser }>('post', request, body);
+            return user;
+        } catch (err: ReturnType<FetchError>) {
+            const { status }: { status: number; message: string } = err;
+            if (status === 422) throw new InvalidDataError(status);
+            else throw err;
+        }
     }
 
     async updateUser(userObj: IUpdateUser) {

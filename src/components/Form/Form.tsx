@@ -5,24 +5,42 @@ import type { appDispatch, IForm } from '../../type';
 import Button from '../Button';
 import './Form.scss';
 
-export default function Form<T>({ title, btnText, action, initial, children }: IForm<T>) {
+export default function Form<T>({
+    title,
+    btnText,
+    action,
+    initial,
+    children,
+    onFinish: propOnFinish,
+    form,
+    loading,
+    disabled,
+}: IForm<T>) {
     const dispatch: appDispatch = useDispatch();
 
-    const onFinich = (values: { [key: string]: string | (string | null)[] | null }) => {
+    const onFinish = (values: { [key: string]: string | (string | null)[] | null }) => {
         const res: { [key: string]: unknown } = {};
         Object.keys(values).forEach((key) => {
             const value = newValue(values[key]);
             if (value) res[key] = value;
         });
+        if (propOnFinish) propOnFinish(res as T);
         dispatch(action(res as T));
     };
 
     return (
         <>
             <h5 className='form__title'>{title}</h5>
-            <FormAntd className='form__body' layout='vertical' initialValues={initial} onFinish={onFinich}>
+            <FormAntd
+                className='form__body'
+                layout='vertical'
+                initialValues={initial}
+                onFinish={onFinish}
+                form={form}
+                disabled={disabled}
+            >
                 {children}
-                <Button text={btnText} type='filled' htmlType='submit' />
+                <Button text={btnText} type='filled' htmlType='submit' loading={loading} />
             </FormAntd>
         </>
     );

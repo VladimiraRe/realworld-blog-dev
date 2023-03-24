@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux';
 import { Input } from 'antd';
+import type { Rule } from 'antd/es/form';
 
 import type { ConvertInterfaceToDict, IUpdateUser, storeType } from '../type';
 import { setIsDataUpdate, setUserError, updateUser } from '../store/requests/action';
@@ -60,25 +61,25 @@ export default function EditProfilePage() {
                 <FormItem
                     name={names[0]}
                     label={names[0]}
-                    rules={userRules.username}
+                    rules={userRules.username as Rule[]}
                     component={<Input placeholder={names[0]} />}
                 />
                 <FormItem
                     name={names[1]}
                     label='email address'
-                    rules={userRules.email}
+                    rules={userRules.email as Rule[]}
                     component={<Input placeholder={names[1]} />}
                 />
                 <FormItem
                     name={names[2]}
                     label='new password'
-                    rules={userRules.password}
+                    rules={userRules.password as Rule[]}
                     component={<Input.Password placeholder={names[2]} />}
                 />
                 <FormItem
                     name={names[3]}
                     label='avatar image'
-                    rules={userRules.url}
+                    rules={userRules.url as Rule[]}
                     component={<Input placeholder='avatar image (url)' />}
                 />
             </Form>

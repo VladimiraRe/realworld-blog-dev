@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { ThunkDispatch } from 'redux-thunk';
 import type { Action } from 'redux';
-import type { Rule } from 'antd/es/form';
+import type { FormInstance, Rule } from 'antd/es/form';
 import type { FieldData } from 'rc-field-form/lib/interface';
 
 import type reducer from './store/reducer';
@@ -110,10 +110,18 @@ export interface IFormValues {
     hasFeedback?: boolean;
 }
 
+export interface IInitial {
+    [key: string]: string | (string | null)[] | null | boolean;
+}
+
 export interface IForm<T> {
     title: string;
     btnText: string;
     action: (fields: T) => (dispatch: appDispatch) => Promise<void>;
-    initial: { [key: string]: string | (string | null)[] | null | boolean };
+    initial: IInitial;
     children: JSX.Element[];
+    onFinish?: (values: T) => void;
+    form?: FormInstance;
+    loading?: boolean;
+    disabled?: boolean;
 }

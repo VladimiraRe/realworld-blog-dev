@@ -29,11 +29,11 @@ export default function ArticlesList({ page, pageSize }: IArticlesList) {
     if (!data) return null;
 
     if (typeof data === 'string') {
-        const { text } = getErrorMessage(data, [
+        const err = getErrorMessage(data, [
             ['serverError', alertMessage.serverError],
             ['notFoundError', alertMessage.notFoundError.listOfArticles],
         ]);
-        return <Alert message={text} type='warning' />;
+        return <Alert message={err.text} type='warning' />;
     }
 
     const { cutArticles, startInx } = data;

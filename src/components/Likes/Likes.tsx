@@ -2,8 +2,8 @@ import type { ActionCreator } from 'redux';
 import type { ThunkActionDispatch } from 'redux-thunk';
 import { useDispatch, useSelector } from 'react-redux';
 
-import type { rootState } from '../type';
-import { favoriteArticle, unfavoriteArticle } from '../store/requests/action';
+import type { rootState } from '../../type';
+import { favoriteArticle, unfavoriteArticle } from '../../store/requests/action';
 import './Likes.scss';
 
 interface ILikes {
