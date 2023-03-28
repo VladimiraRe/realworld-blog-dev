@@ -13,8 +13,13 @@ import Alert, { alertMessage, alertType } from '../Alert';
 import useNetworkError, { networkError } from '../../errors/useNetworkError';
 import CreateArticlePage from '../../pages/CreateArticlePage';
 import EditArticlePage from '../../pages/EditArticlePage';
+import Loading from '../Loading';
 
-export default function App() {
+interface IApp {
+    token: string;
+}
+
+export default function App({ token }: IApp) {
     const { loggedIn } = useSelector((state: storeType) => state.user);
     const hasError = useSelector((state: storeType) => state.hasError);
 
@@ -22,6 +27,8 @@ export default function App() {
 
     if (hasError && hasError[0] === networkError)
         return <Container component={<Alert message={alertMessage.networkError} type='error' />} />;
+
+    if (token && !loggedIn) return <Container component={<Loading />} />;
 
     return (
         <div className='app'>

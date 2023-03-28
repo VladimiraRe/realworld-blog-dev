@@ -1,9 +1,9 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Input, Checkbox } from 'antd';
 import type { Rule } from 'antd/es/form';
 
-import type { storeType } from '../type';
+import type { appDispatch, IRegisterNewUser, storeType } from '../type';
 import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
@@ -14,6 +14,7 @@ import useCleaner from '../utils/hooks/useCleaner';
 import getErrorMessage from '../utils/hooks/getErrorMessage';
 
 export default function RegistrationPage() {
+    const dispatch: appDispatch = useDispatch();
     const { isRegistered, hasError } = useSelector((state: storeType) => state.user);
 
     useCleaner([
@@ -53,7 +54,12 @@ export default function RegistrationPage() {
 
     return (
         <UserForm promptText='Already have an account?' promptLink={{ text: 'Sign In', link: '/sign-in' }}>
-            <Form title='Create new account' btnText='Create' action={registerNewUser} initial={initial}>
+            <Form
+                title='Create new account'
+                btnText='Create'
+                onFinish={(values: IRegisterNewUser) => dispatch(registerNewUser(values))}
+                initial={initial}
+            >
                 <FormItem
                     name={names[0]}
                     label={names[0]}

@@ -10,13 +10,14 @@ export interface IUseSideContents {
         hasError: string | null;
         props: () => { text: string; type?: keyof typeof alertType };
     };
-    other?: { check: boolean; component: JSX.Element }[];
+    other?: { check: boolean; component?: JSX.Element; action?: () => JSX.Element | void }[];
+    withoutLoading?: boolean;
 }
 
-export default function useSideContents({ error, other }: IUseSideContents) {
+export default function useSideContents({ error, other, withoutLoading }: IUseSideContents) {
     const isLoading = useSelector((state: storeType) => state.isLoading);
 
-    if (isLoading) return <Loading />;
+    if (isLoading && !withoutLoading) return <Loading />;
 
     if (error.hasError) {
         const { text, type } = error.props();
@@ -25,8 +26,9 @@ export default function useSideContents({ error, other }: IUseSideContents) {
 
     if (!other) return false;
     // eslint-disable-next-line no-restricted-syntax
-    for (const { check, component } of other) {
-        if (check) return component;
+    for (const { check, component, action } of other) {
+        if (check && component) return component;
+        if (check && action) return action();
     }
 
     return false;

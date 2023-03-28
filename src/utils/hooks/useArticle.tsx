@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import type { appDispatch, storeType } from '../../type';
@@ -10,8 +10,18 @@ export default function useArticle(linkSlug: string) {
     const isLoading = useSelector((state: storeType) => state.isLoading);
     const dispatch: appDispatch = useDispatch();
 
-    useEffect(() => {
-        if (!hasError && !isDeleted && (!article || (Object.keys(article).length !== 0 && article.slug !== linkSlug)))
+    useLayoutEffect(() => {
+        const isNeedReloading = sessionStorage.getItem('isNeedReloading');
+        if (isNeedReloading) {
+            sessionStorage.removeItem('isNeedReloading');
+            window.location.reload();
+        }
+        if (
+            !isNeedReloading &&
+            !hasError &&
+            !isDeleted &&
+            (!article || (Object.keys(article).length !== 0 && article.slug !== linkSlug))
+        )
             dispatch(getArticle(linkSlug, token));
         return () => {
             if (isLoading) dispatch(setIsLoading(false));

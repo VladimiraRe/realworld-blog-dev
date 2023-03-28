@@ -1,43 +1,60 @@
-import { useSelector } from 'react-redux';
+import { useLayoutEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Input } from 'antd';
 import type { Rule } from 'antd/es/form';
 
-import type { ConvertInterfaceToDict, IUpdateUser, storeType } from '../type';
-import { setIsDataUpdate, setUserError, updateUser } from '../store/requests/action';
+import type { appDispatch, ConvertInterfaceToDict, IUpdateUser, storeType } from '../type';
+import { setUserError, updateUser } from '../store/requests/action';
 import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
-import useCleaner from '../utils/hooks/useCleaner';
 import useSideContent from '../utils/hooks/useSideContent';
 import type { alertType } from '../components/Alert';
 import Alert, { alertMessage } from '../components/Alert';
 import getErrorMessage from '../utils/hooks/getErrorMessage';
+import useCleaner from '../utils/hooks/useCleaner';
 
 type updateUserType = ConvertInterfaceToDict<IUpdateUser>;
 type formType = Omit<updateUserType, 'bio'>;
 
 export default function EditProfilePage() {
     const { loggedIn, hasError } = useSelector((state: storeType) => state.user);
-    const isDataUpdate = useSelector((state: storeType) => state.isDataUpdate);
+    const dispatch: appDispatch = useDispatch();
 
-    useCleaner([
-        { check: !!hasError, action: () => setUserError(null) },
-        { check: !!isDataUpdate, action: () => setIsDataUpdate(null) },
-    ]);
+    const [isReloaded, setIsReloaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useCleaner([{ check: !!hasError, action: () => setUserError(null) }]);
+
+    useLayoutEffect(() => {
+        if (sessionStorage.getItem('isReloaded')) {
+            sessionStorage.removeItem('isReloaded');
+            setIsReloaded(true);
+        }
+    }, []);
 
     const sideContent = useSideContent({
         error: {
             hasError,
-            props: () =>
-                getErrorMessage(hasError, [
+            props: () => {
+                setIsLoading(false);
+                return getErrorMessage(hasError, [
                     ['unauthorizedError', alertMessage.updateUserError],
                     ['serverError', alertMessage.serverError],
-                ]),
+                ]);
+            },
         },
         other: [
             { check: !loggedIn, component: generateAlert(alertMessage.updateUserError, 'error') },
-            { check: !!isDataUpdate, component: generateAlert(alertMessage.successful('profile editing'), 'success') },
+            {
+                check: isReloaded,
+                action: () => {
+                    setIsReloaded(false);
+                    return generateAlert(alertMessage.successful('profile editing'), 'success');
+                },
+            },
         ],
+        withoutLoading: true,
     });
     if (sideContent) return <Container component={sideContent} />;
 
@@ -50,13 +67,24 @@ export default function EditProfilePage() {
         initial[name] = value;
     });
 
+    const onFinish = (values: IUpdateUser) => {
+        setIsLoading(true);
+        dispatch(updateUser({ ...newUserInfo(values), token: loggedIn?.token as string }));
+        if (values.image && !hasError) {
+            sessionStorage.setItem('isReloaded', 'true');
+            window.location.reload();
+        }
+    };
+
     return (
         <UserForm>
             <Form<IUpdateUser>
                 title='edit profile'
                 btnText='save'
-                action={(fromForm) => updateUser({ ...newUserInfo(fromForm), token: loggedIn?.token as string })}
+                loading={isLoading}
+                disabled={isLoading}
                 initial={initial}
+                onFinish={onFinish}
             >
                 <FormItem
                     name={names[0]}

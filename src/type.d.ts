@@ -42,6 +42,15 @@ const actions = {
 
 export type actionsType = ReturnType<inferValuesType<typeof actions>>;
 
+export interface ILogin {
+    email: string;
+    password: string;
+}
+
+export interface IRegisterNewUser extends ILogin {
+    username: string;
+}
+
 export interface IAuthor {
     username: string;
     image: string;
@@ -117,7 +126,6 @@ export interface IInitial {
 export interface IForm<T> {
     title: string;
     btnText: string;
-    action: (fields: T) => (dispatch: appDispatch) => Promise<void>;
     initial: IInitial;
     children: JSX.Element[];
     onFinish?: (values: T) => void;

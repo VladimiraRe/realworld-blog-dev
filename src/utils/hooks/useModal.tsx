@@ -14,6 +14,7 @@ export default function useModal(token: string, slug: string) {
             icon: <ExclamationCircleFilled />,
             content: 'Are you sure to delete this article?',
             onOk() {
+                sessionStorage.setItem('isNeedReloading', 'true');
                 dispatch(deleteArticle(token, slug));
             },
         });

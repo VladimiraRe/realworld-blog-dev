@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useLayoutEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Input } from 'antd';
 
@@ -27,10 +27,14 @@ export const articleFormNames = ['title', 'description', 'body', 'tagList'] as c
 export default function ArticleForm({ action, check, values }: IArticleForm) {
     const { token } = useSelector((state: storeType) => state.user.loggedIn!);
     const { article, hasError, isCreated, isChanged } = useSelector((state: storeType) => state.article);
+    const dispatch: appDispatch = useDispatch();
     const history = useHistory();
 
     useLayoutEffect(() => {
-        if (check && article?.slug) history.push(`/articles/${article?.slug}`);
+        if (check && article?.slug) {
+            sessionStorage.setItem('isNeedReloading', 'true');
+            history.push(`/articles/${article?.slug}`);
+        }
         return () => {
             if (hasError) setArticle({ hasError: null });
             if (isCreated) setArticle({ isCreated: false });
@@ -65,7 +69,7 @@ export default function ArticleForm({ action, check, values }: IArticleForm) {
                 title='create new article'
                 btnText='send'
                 initial={initial}
-                action={(articleData: INewArticle) => action(articleData, token as string)}
+                onFinish={(articleData: INewArticle) => dispatch(action(articleData, token as string))}
             >
                 <FormItem
                     name={names[0]}

@@ -1,14 +1,12 @@
-import { useDispatch } from 'react-redux';
 import { Form as FormAntd } from 'antd';
 
-import type { appDispatch, IForm } from '../../type';
+import type { IForm } from '../../type';
 import Button from '../Button';
 import './Form.scss';
 
 export default function Form<T>({
     title,
     btnText,
-    action,
     initial,
     children,
     onFinish: propOnFinish,
@@ -16,8 +14,6 @@ export default function Form<T>({
     loading,
     disabled,
 }: IForm<T>) {
-    const dispatch: appDispatch = useDispatch();
-
     const onFinish = (values: { [key: string]: string | (string | null)[] | null }) => {
         const res: { [key: string]: unknown } = {};
         Object.keys(values).forEach((key) => {
@@ -25,7 +21,6 @@ export default function Form<T>({
             if (value) res[key] = value;
         });
         if (propOnFinish) propOnFinish(res as T);
-        dispatch(action(res as T));
     };
 
     return (

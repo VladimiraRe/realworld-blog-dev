@@ -15,7 +15,7 @@ if (container) {
 
     root.render(
         <Provider store={store}>
-            <App />
+            <App token={token} />
         </Provider>
     );
 }

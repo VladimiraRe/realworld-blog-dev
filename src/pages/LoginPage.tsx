@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Input } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 
-import type { IInitial, storeType } from '../type';
+import type { appDispatch, IInitial, ILogin, storeType } from '../type';
 import { login, setUserError } from '../store/requests/action';
 import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
@@ -19,9 +19,8 @@ interface IState extends IInitial {
 
 export default function LoginPage() {
     const { hasError } = useSelector((state: storeType) => state.user);
-
+    const dispatch: appDispatch = useDispatch();
     const [form] = useForm();
-
     const prevValues = useRef({ email: null, password: null } as IState);
 
     const [isInvalidDataError, setIsInvalidDataError] = useState(false);
@@ -63,12 +62,12 @@ export default function LoginPage() {
             <Form
                 title='sign in'
                 btnText='login'
-                action={login}
                 initial={prevValues.current}
-                onFinish={(values) => {
+                onFinish={(values: ILogin) => {
                     prevValues.current = values as IState;
                     setIsInvalidDataError(false);
                     setIsLoading(true);
+                    dispatch(login(values));
                 }}
                 form={form}
                 loading={isLoading}

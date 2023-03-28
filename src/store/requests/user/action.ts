@@ -1,8 +1,8 @@
 import { bindActionCreators } from 'redux';
 
 import api from '../../../api/realWorldApi';
-import { setIsDataUpdate, setIsLoading } from '../action';
-import type { actionsType, appDispatch, IUser, IUpdateUser } from '../../../type';
+import { setIsLoading } from '../action';
+import type { actionsType, appDispatch, IUser, IUpdateUser, ILogin, IRegisterNewUser } from '../../../type';
 import type { FetchError } from '../../../errors/customErrors';
 import { InvalidDataError, ReservedError, ServerError, UnauthorizedError } from '../../../errors/customErrors';
 
@@ -20,12 +20,6 @@ export const setUserError = (error: string | null) => ({
     error,
 });
 
-interface IRegisterNewUser {
-    username: string;
-    email: string;
-    password: string;
-}
-
 export const registerNewUser =
     ({ username, email, password }: IRegisterNewUser) =>
     async (dispatch: appDispatch) => {
@@ -39,11 +33,6 @@ export const registerNewUser =
             }
         );
     };
-
-interface ILogin {
-    email: string;
-    password: string;
-}
 
 interface IReturnedUser extends IUser {
     token: string;
@@ -91,7 +80,7 @@ export const login =
     };
 
 export const updateUser = (newUser: IUpdateUser) => async (dispatch: appDispatch) => {
-    const user = await userAction(
+    await userAction(
         dispatch,
         (res: IUser) => setLoggedIn(res),
         () => api.updateUser(newUser) as Promise<IUser>,
@@ -100,8 +89,6 @@ export const updateUser = (newUser: IUpdateUser) => async (dispatch: appDispatch
             message: 'unauthorizedError',
         }
     );
-    if (!user || Object.keys.length === 0) return;
-    dispatch(setIsDataUpdate(true));
 };
 
 interface ICustomError {
