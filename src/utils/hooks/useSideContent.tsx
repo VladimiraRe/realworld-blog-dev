@@ -1,9 +1,9 @@
 import { useSelector } from 'react-redux';
 
 import type { storeType } from '../../type';
-import type { alertType } from '../../components/Alert';
 import Loading from '../../components/Loading';
 import Alert from '../../components/Alert';
+import type { alertType } from '../helpers/alert.helpers';
 
 export interface IUseSideContents {
     error: {

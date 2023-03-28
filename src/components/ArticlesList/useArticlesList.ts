@@ -2,8 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getListOfArticles } from '../../store/requests/action';
-import type { storeType, appDispatch } from '../../type';
-import type { alertMessageKeysType } from '../Alert';
+import type { storeType, appDispatch, alertMessageKeysType } from '../../type';
 
 export default function useArticlesList(page: number, pageSize: number) {
     const LIMIT = 25;

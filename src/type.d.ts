@@ -9,6 +9,7 @@ import type store from './store';
 import * as requestsActions from './store/requests/action';
 import * as errorsActions from './store/errors/action';
 import type { errorsState } from './store/errors/reducer';
+import type { alertMessage } from './utils/helpers/alert.helpers';
 
 export type inferValuesType<T> = T extends { [key: string]: infer U } ? U : never;
 
@@ -41,6 +42,8 @@ const actions = {
 };
 
 export type actionsType = ReturnType<inferValuesType<typeof actions>>;
+
+export type alertMessageKeysType = keyof typeof alertMessage;
 
 export interface ILogin {
     email: string;

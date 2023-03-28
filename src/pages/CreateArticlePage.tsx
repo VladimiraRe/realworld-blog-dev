@@ -3,10 +3,11 @@ import { useSelector } from 'react-redux';
 import type { storeType } from '../type';
 import ArticleForm from '../components/Form/ArticleForm';
 import Container from '../containers/Container';
-import Alert, { alertMessage } from '../components/Alert';
+import Alert from '../components/Alert';
 import { createArtile } from '../store/requests/action';
 import useSideContents from '../utils/hooks/useSideContent';
 import getErrorMessage from '../utils/hooks/getErrorMessage';
+import { alertMessage } from '../utils/helpers/alert.helpers';
 
 export default function CreateArticlePage() {
     const { loggedIn } = useSelector((state: storeType) => state.user);

@@ -1,5 +1,5 @@
-import type { alertType } from '../../components/Alert';
-import { alertMessage } from '../../components/Alert';
+import type { alertType } from '../helpers/alert.helpers';
+import { alertMessage } from '../helpers/alert.helpers';
 
 type checkType = [string, string, (keyof typeof alertType)?][];
 

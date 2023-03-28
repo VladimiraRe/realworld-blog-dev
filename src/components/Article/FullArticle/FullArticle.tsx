@@ -7,9 +7,10 @@ import ArticleCard from '../ArticleCard';
 import './FullArticle.scss';
 import useArticle from '../../../utils/hooks/useArticle';
 import getErrorMessage from '../../../utils/hooks/getErrorMessage';
-import Alert, { alertMessage, alertType } from '../../Alert';
+import Alert from '../../Alert';
 import type { storeType } from '../../../type';
 import useSideContents from '../../../utils/hooks/useSideContent';
+import { alertMessage, alertType } from '../../../utils/helpers/alert.helpers';
 
 export default function FullArticle() {
     const { hasError, isDeleted } = useSelector((state: storeType) => state.article);

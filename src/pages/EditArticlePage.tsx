@@ -4,11 +4,12 @@ import { useHistory } from 'react-router-dom';
 import type { INewArticle, storeType } from '../type';
 import ArticleForm from '../components/Form/ArticleForm';
 import Container from '../containers/Container';
-import Alert, { alertMessage, alertType } from '../components/Alert';
+import Alert from '../components/Alert';
 import useArticle from '../utils/hooks/useArticle';
 import { updateArtile } from '../store/requests/action';
 import useSideContents from '../utils/hooks/useSideContent';
 import getErrorMessage from '../utils/hooks/getErrorMessage';
+import { alertMessage, alertType } from '../utils/helpers/alert.helpers';
 
 export default function EditArticlePage() {
     const { loggedIn } = useSelector((state: storeType) => state.user);

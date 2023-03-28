@@ -2,12 +2,12 @@ import { useHistory } from 'react-router-dom';
 import { format } from 'date-fns';
 import { v1 as uuidv1 } from 'uuid';
 
-import type { IArticle } from '../../type';
-import type { alertMessageKeysType } from '../Alert';
+import type { alertMessageKeysType, IArticle } from '../../type';
 import './ArticlesList.scss';
 import ArticleCard from '../Article/ArticleCard';
-import Alert, { alertMessage, alertMessage as alertMessageObj } from '../Alert';
+import Alert from '../Alert';
 import getErrorMessage from '../../utils/hooks/getErrorMessage';
+import { alertMessage } from '../../utils/helpers/alert.helpers';
 
 import useArticlesList from './useArticlesList';
 
@@ -38,8 +38,7 @@ export default function ArticlesList({ page, pageSize }: IArticlesList) {
 
     const { cutArticles, startInx } = data;
 
-    if (cutArticles.length === 0)
-        return <Alert message={alertMessageObj.notFoundError.listOfArticles} type='warning' />;
+    if (cutArticles.length === 0) return <Alert message={alertMessage.notFoundError.listOfArticles} type='warning' />;
 
     const onClick = (slug: string) => {
         history.push(`articles/${slug}`);

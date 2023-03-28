@@ -5,7 +5,6 @@ import { useHistory } from 'react-router-dom';
 import { Input } from 'antd';
 
 import useSideContents from '../../../utils/hooks/useSideContent';
-import { alertMessage } from '../../Alert';
 import { setArticle } from '../../../store/requests/action';
 import type { appDispatch, INewArticle, storeType } from '../../../type';
 import DynamicForm from '../DynamicForm';
@@ -15,6 +14,7 @@ import { articleRules } from '../../../utils/helpers/validation.helpers';
 import './ArticleForm.scss';
 import getErrorMessage from '../../../utils/hooks/getErrorMessage';
 import Container from '../../../containers/Container';
+import { alertMessage } from '../../../utils/helpers/alert.helpers';
 
 interface IArticleForm {
     action: (articleData: INewArticle, token: string) => (dispatch: appDispatch) => Promise<void>;

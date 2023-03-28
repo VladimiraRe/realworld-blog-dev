@@ -9,8 +9,9 @@ import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
 import useCleaner from '../utils/hooks/useCleaner';
-import Alert, { alertMessage } from '../components/Alert';
+import Alert from '../components/Alert';
 import getErrorMessage from '../utils/hooks/getErrorMessage';
+import { alertMessage } from '../utils/helpers/alert.helpers';
 
 interface IState extends IInitial {
     email: string | null;

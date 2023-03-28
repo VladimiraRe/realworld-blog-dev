@@ -9,10 +9,11 @@ import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
 import useSideContent from '../utils/hooks/useSideContent';
-import type { alertType } from '../components/Alert';
-import Alert, { alertMessage } from '../components/Alert';
+import Alert from '../components/Alert';
 import getErrorMessage from '../utils/hooks/getErrorMessage';
 import useCleaner from '../utils/hooks/useCleaner';
+import { alertMessage } from '../utils/helpers/alert.helpers';
+import type { alertType } from '../utils/helpers/alert.helpers';
 
 type updateUserType = ConvertInterfaceToDict<IUpdateUser>;
 type formType = Omit<updateUserType, 'bio'>;
