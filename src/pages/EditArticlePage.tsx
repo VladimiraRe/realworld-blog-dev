@@ -6,7 +6,7 @@ import ArticleForm from '../components/Form/ArticleForm';
 import Container from '../containers/Container';
 import Alert from '../components/Alert';
 import useArticle from '../utils/hooks/useArticle';
-import { updateArtile } from '../store/requests/action';
+import { updateArtile } from '../store/action';
 import useSideContents from '../utils/hooks/useSideContent';
 import getErrorMessage from '../utils/hooks/getErrorMessage';
 import { alertMessage, alertType } from '../utils/helpers/alert.helpers';

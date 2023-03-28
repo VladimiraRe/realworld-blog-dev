@@ -2,7 +2,7 @@ import { useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import type { appDispatch, storeType } from '../../type';
-import { getArticle, setArticle, setIsLoading } from '../../store/requests/action';
+import { getArticle, setArticle, setIsLoading } from '../../store/action';
 
 export default function useArticle(linkSlug: string) {
     const { article, hasError, isDeleted } = useSelector((state: storeType) => state.article);

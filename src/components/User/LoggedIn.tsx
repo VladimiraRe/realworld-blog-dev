@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 
-import { setLoggedIn } from '../../store/requests/action';
+import { setLoggedIn } from '../../store/action';
 import Button from '../Button';
 import Author from '../Author';
 import { DEFAULT_AVATAR } from '../../utils/helpers/defaultVars.heplers';

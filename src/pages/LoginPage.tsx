@@ -4,7 +4,7 @@ import { Input } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 
 import type { appDispatch, IInitial, ILogin, storeType } from '../type';
-import { login, setUserError } from '../store/requests/action';
+import { login, setUserError } from '../store/action';
 import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';

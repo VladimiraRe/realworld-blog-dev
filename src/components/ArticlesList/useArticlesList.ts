@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getListOfArticles } from '../../store/requests/action';
+import { getListOfArticles } from '../../store/action';
 import type { storeType, appDispatch, alertMessageKeysType } from '../../type';
 
 export default function useArticlesList(page: number, pageSize: number) {

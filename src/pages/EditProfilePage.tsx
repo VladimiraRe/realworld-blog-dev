@@ -4,7 +4,7 @@ import { Input } from 'antd';
 import type { Rule } from 'antd/es/form';
 
 import type { appDispatch, ConvertInterfaceToDict, IUpdateUser, storeType } from '../type';
-import { setUserError, updateUser } from '../store/requests/action';
+import { setUserError, updateUser } from '../store/action';
 import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';

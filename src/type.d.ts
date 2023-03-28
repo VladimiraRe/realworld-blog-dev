@@ -6,6 +6,8 @@ import type { FieldData } from 'rc-field-form/lib/interface';
 
 import type reducer from './store/reducer';
 import type store from './store';
+import * as articlesActions from './store/requests/articles/action';
+import * as userActions from './store/requests/user/action';
 import * as requestsActions from './store/requests/action';
 import * as errorsActions from './store/errors/action';
 import type { errorsState } from './store/errors/reducer';
@@ -21,23 +23,10 @@ export type rootState = ReturnType<typeof reducer>;
 export type storeType = ReturnType<typeof store.getState>;
 export type appDispatch = ThunkDispatch<storeType, void, Action>;
 
-const {
-    getListOfArticles,
-    getArticle,
-    registerNewUser,
-    login,
-    updateUser,
-    getUser,
-    createArtile,
-    updateArtile,
-    deleteArticle,
-    favoriteArticle,
-    unfavoriteArticle,
-    ...newRequestsActions
-} = requestsActions;
-
 const actions = {
-    ...newRequestsActions,
+    ...articlesActions,
+    ...userActions,
+    ...requestsActions,
     ...errorsActions,
 };
 

@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Modal as ModalAntd } from 'antd';
 
-import { deleteArticle } from '../../store/requests/action';
+import { deleteArticle } from '../../store/action';
 import type { appDispatch } from '../../type';
 
 export default function useModal(token: string, slug: string) {

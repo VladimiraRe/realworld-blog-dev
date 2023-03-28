@@ -5,7 +5,7 @@ import store from './store';
 import App from './components/App';
 import './index.scss';
 import getCookie from './utils/hooks/getCookie';
-import { getUser } from './store/requests/action';
+import { getUser } from './store/action';
 
 const container = document.getElementById('root');
 if (container) {

@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { Input } from 'antd';
 
 import useSideContents from '../../../utils/hooks/useSideContent';
-import { setArticle } from '../../../store/requests/action';
+import { setArticle } from '../../../store/action';
 import type { appDispatch, INewArticle, storeType } from '../../../type';
 import DynamicForm from '../DynamicForm';
 import Form from '../Form';

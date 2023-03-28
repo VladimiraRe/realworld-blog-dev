@@ -7,7 +7,7 @@ import type { appDispatch, IRegisterNewUser, storeType } from '../type';
 import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
-import { changeIsRegistered, registerNewUser, setUserError } from '../store/requests/action';
+import { changeIsRegistered, registerNewUser, setUserError } from '../store/action';
 import Alert from '../components/Alert';
 import useSideContent from '../utils/hooks/useSideContent';
 import useCleaner from '../utils/hooks/useCleaner';

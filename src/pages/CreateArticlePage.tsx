@@ -4,7 +4,7 @@ import type { storeType } from '../type';
 import ArticleForm from '../components/Form/ArticleForm';
 import Container from '../containers/Container';
 import Alert from '../components/Alert';
-import { createArtile } from '../store/requests/action';
+import { createArtile } from '../store/action';
 import useSideContents from '../utils/hooks/useSideContent';
 import getErrorMessage from '../utils/hooks/getErrorMessage';
 import { alertMessage } from '../utils/helpers/alert.helpers';
