@@ -99,9 +99,14 @@
         "default-param-last": "off",
         //to use an unnamed function in useSelector:
         "react-redux/useSelector-prefer-selectors": ["off"],
-        //use TypeScript so so I don't need defaultProps:
+        //use TypeScript so I don't need defaultProps:
         "react/require-default-props": "off",
-        "react/jsx-no-useless-fragment": ["error", { "allowExpressions": true }]
+        "react/jsx-no-useless-fragment": ["error", { "allowExpressions": true }],
+        //this rule warns the variables only if all variables in destructuring should be const:
+        "prefer-const": ["error", {
+            "destructuring": "all",
+            "ignoreReadBeforeAssign": true
+        }]
     },
     "settings": {
         "import/resolver": { //settings of eslint-plugin-import
