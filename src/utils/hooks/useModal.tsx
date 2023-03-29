@@ -1,21 +1,14 @@
-import { useDispatch } from 'react-redux';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Modal as ModalAntd } from 'antd';
 
-import { deleteArticle } from '../../store/action';
-import type { appDispatch } from '../../type';
-
-export default function useModal(token: string, slug: string) {
-    const dispatch: appDispatch = useDispatch();
+export default function useModal(token: string | undefined, text: string, onOk: () => void) {
+    if (!token) return false;
 
     // eslint-disable-next-line no-unused-expressions
     return () =>
         ModalAntd.confirm({
             icon: <ExclamationCircleFilled />,
-            content: 'Are you sure to delete this article?',
-            onOk() {
-                sessionStorage.setItem('isNeedReloading', 'true');
-                dispatch(deleteArticle(token, slug));
-            },
+            content: text,
+            onOk,
         });
 }

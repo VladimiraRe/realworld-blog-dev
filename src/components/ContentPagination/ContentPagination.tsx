@@ -1,40 +1,24 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Pagination } from 'antd';
 
-import type { storeType } from '../../type';
-import { setIsLoading } from '../../store/requests/action';
 import './ContentPagination.scss';
-import Loading from '../Loading';
 
 interface IPagination {
     pageSize: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     content: (props: any) => JSX.Element | null;
+    itemsCount: number | null;
     baseLink?: string;
 }
 
-export default function ContentPagination({ pageSize, content: Content, baseLink }: IPagination) {
+export default function ContentPagination({ pageSize, content: Content, itemsCount, baseLink }: IPagination) {
     const PAGE_PART_OF_LINK = '?page=';
-
-    const { articlesCount } = useSelector((state: storeType) => state.listOfArticles);
-    const isLoading = useSelector((state: storeType) => state.isLoading);
-    const dispatch = useDispatch();
 
     const routerHistory = useHistory();
     const linkPage = getPageFromLink(routerHistory.location.search);
 
     const [page, setPage] = useState(linkPage || 1);
-
-    useEffect(
-        () => () => {
-            if (isLoading) dispatch(setIsLoading(false));
-        },
-        [isLoading, dispatch]
-    );
-
-    if (isLoading) return <Loading />;
 
     const onChange = (newPage: number) => {
         const stringNewPage = String(newPage);
@@ -49,12 +33,12 @@ export default function ContentPagination({ pageSize, content: Content, baseLink
     return (
         <>
             <Content page={page} pageSize={pageSize} />
-            {articlesCount !== null && (
+            {itemsCount !== null && (
                 <Pagination
                     className='contentPagination'
                     current={page}
                     pageSize={pageSize}
-                    total={Math.ceil(articlesCount / pageSize)}
+                    total={Math.ceil(itemsCount / pageSize)}
                     onChange={(newPage) => onChange(newPage)}
                     showLessItems
                     hideOnSinglePage

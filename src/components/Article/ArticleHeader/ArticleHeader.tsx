@@ -9,13 +9,14 @@ import ArticleBtns from '../ArticleBtns';
 import Likes from '../../Likes';
 
 interface IArticleHeader {
-    isPage: boolean;
     data: Omit<Omit<IArticleCard, 'favoritesCount'>, 'favorited'>;
     slug: string;
+    favoritesCount: number;
+    favorited: boolean;
     inx?: number;
 }
 
-export default function ArticleHeader({ isPage, data, slug, inx }: IArticleHeader) {
+export default function ArticleHeader({ data, slug, favoritesCount, favorited, inx }: IArticleHeader) {
     const { title, tagList, createdAt, description, author } = data;
 
     const className = ['article__header'];
@@ -23,7 +24,7 @@ export default function ArticleHeader({ isPage, data, slug, inx }: IArticleHeade
     let maxTag = 11;
     let shortTitle: string | null = null;
     let shortDescription: string | null = null;
-    if (!isPage) {
+    if (inx) {
         className.push('article__header--preview');
         maxTag = 4;
         shortTitle = checkLength(title, 20);
@@ -31,7 +32,7 @@ export default function ArticleHeader({ isPage, data, slug, inx }: IArticleHeade
     }
 
     const tags = tagList.slice(0, maxTag).map((tag) => {
-        return <Tag key={uuidv1()}>{isPage ? checkLength(tag, 30) : checkLength(tag, 10)}</Tag>;
+        return <Tag key={uuidv1()}>{!inx ? checkLength(tag, 30) : checkLength(tag, 10)}</Tag>;
     });
 
     const date = format(new Date(createdAt), 'PPP');
@@ -41,7 +42,7 @@ export default function ArticleHeader({ isPage, data, slug, inx }: IArticleHeade
             <div>
                 <div className='article__titleWrap'>
                     <h5>{shortTitle || title}</h5>
-                    <Likes slug={slug} inx={inx} />
+                    <Likes slug={slug} favoritesCount={favoritesCount} favorited={favorited} inx={inx} />
                 </div>
                 <div className='article__tags'>
                     {tags}
@@ -53,7 +54,7 @@ export default function ArticleHeader({ isPage, data, slug, inx }: IArticleHeade
                 <Author data={author}>
                     <span>{date}</span>
                 </Author>
-                {isPage && <ArticleBtns author={author.username} />}
+                {!inx && <ArticleBtns author={author.username} />}
             </div>
         </header>
     );
