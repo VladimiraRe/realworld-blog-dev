@@ -55,7 +55,7 @@ export interface IAuthorWithFollowing extends IAuthor {
 
 export interface IUser extends IAuthor {
     email: string;
-    token?: string;
+    token: string;
 }
 
 export interface IUpdateUser {
@@ -85,8 +85,6 @@ export interface IArticle extends INewArticle {
 export interface IStateArticle {
     article: IArticle | null;
     hasError: string | null;
-    isChanged: boolean;
-    isCreated: boolean;
     isDeleted: boolean;
 }
 

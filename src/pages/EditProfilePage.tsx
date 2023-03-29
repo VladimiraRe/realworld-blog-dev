@@ -1,58 +1,42 @@
-import { useLayoutEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Input } from 'antd';
 import type { Rule } from 'antd/es/form';
 
-import type { appDispatch, ConvertInterfaceToDict, IUpdateUser, storeType } from '../type';
-import { setUserError, updateUser } from '../store/action';
+import type { appDispatch, ConvertInterfaceToDict, IUpdateUser, IUser, storeType } from '../type';
+import { updateUser } from '../store/action';
 import { userRules } from '../utils/helpers/validation.helpers';
 import Container from '../containers/Container';
 import Form, { UserForm, FormItem } from '../components/Form';
 import useSideContent from '../utils/hooks/useSideContent';
 import Alert from '../components/Alert';
 import getErrorMessage from '../utils/hooks/getErrorMessage';
-import useCleaner from '../utils/hooks/useCleaner';
 import { alertMessage } from '../utils/helpers/alert.helpers';
-import type { alertType } from '../utils/helpers/alert.helpers';
+import useReload from '../utils/hooks/useReload';
 
 type updateUserType = ConvertInterfaceToDict<IUpdateUser>;
 type formType = Omit<updateUserType, 'bio'>;
 
 export default function EditProfilePage() {
     const { loggedIn, hasError } = useSelector((state: storeType) => state.user);
+    const isLoading = useSelector((state: storeType) => state.isLoading);
     const dispatch: appDispatch = useDispatch();
 
-    const [isReloaded, setIsReloaded] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-
-    useCleaner([{ check: !!hasError, action: () => setUserError(null) }]);
-
-    useLayoutEffect(() => {
-        if (sessionStorage.getItem('isReloaded')) {
-            sessionStorage.removeItem('isReloaded');
-            setIsReloaded(true);
-        }
-    }, []);
+    const { reload, setReload } = useReload();
 
     const sideContent = useSideContent({
         error: {
             hasError,
-            props: () => {
-                setIsLoading(false);
-                return getErrorMessage(hasError, [
+            props: () =>
+                getErrorMessage(hasError, [
                     ['unauthorizedError', alertMessage.updateUserError],
                     ['serverError', alertMessage.serverError],
-                ]);
-            },
+                ]),
         },
         other: [
-            { check: !loggedIn, component: generateAlert(alertMessage.updateUserError, 'error') },
+            { check: !loggedIn, component: <Alert message={alertMessage.updateUserError} type='error' /> },
             {
-                check: isReloaded,
-                action: () => {
-                    setIsReloaded(false);
-                    return generateAlert(alertMessage.successful('profile editing'), 'success');
-                },
+                check: reload === 'done',
+                component: <Alert message='profile editing' type='success' />,
             },
         ],
         withoutLoading: true,
@@ -68,10 +52,11 @@ export default function EditProfilePage() {
         initial[name] = value;
     });
 
-    const onFinish = (values: IUpdateUser) => {
-        setIsLoading(true);
-        dispatch(updateUser({ ...newUserInfo(values), token: loggedIn?.token as string }));
+    const onFinish = async (values: IUpdateUser) => {
+        const { token } = loggedIn as IUser;
+        await dispatch(updateUser({ ...newUserInfo(values), token }));
         if (values.image && !hasError) {
+            setReload(true);
             sessionStorage.setItem('isReloaded', 'true');
             window.location.reload();
         }
@@ -119,8 +104,4 @@ export default function EditProfilePage() {
 function newUserInfo(fields: formType) {
     const cleanFields = Object.entries(fields).filter((el) => el[1] !== null && el[1] !== '');
     return Object.fromEntries(cleanFields);
-}
-
-function generateAlert(message: string, type: keyof typeof alertType) {
-    return <Alert message={message} type={type} />;
 }

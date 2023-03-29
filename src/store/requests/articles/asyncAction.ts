@@ -10,68 +10,107 @@ import { setIsLoading } from '../action';
 import { setArticle, setListOfArticles } from './action';
 
 export const getListOfArticles = (offset?: number, token?: string) => async (dispatch: appDispatch) => {
-    await getData(() => api.getListOfArticles(offset, token), dispatch, { setData: setListOfArticles, setIsLoading });
+    await getData(() => api.getListOfArticles(offset, token), dispatch, { setData: setListOfArticles }, true);
 };
 
 export const getArticle = (slug: string, token?: string) => async (dispatch: appDispatch) => {
-    await getData(() => api.getArticle(slug, token), dispatch, { setData: setArticle, setIsLoading });
+    await getData(() => api.getArticle(slug, token), dispatch, { setData: setArticle }, true);
 };
 
-export const createArtile = (articleData: INewArticle, token: string) => async (dispatch: appDispatch) => {
-    await changeData(() => api.createArticle(articleData, token), dispatch, {
-        setData: (data) => setArticle({ article: { ...data }, isCreated: true }),
-        setError: setArticle,
-        setIsLoading,
-    });
-};
-
-export const updateArtile =
-    (articleData: INewArticle, token: string, slug: string) => async (dispatch: appDispatch) => {
-        await changeData(() => api.updateArticle(articleData, token, slug), dispatch, {
-            setData: (data) => setArticle({ article: { ...data }, isChanged: true }),
+export const createArticle = (articleData: INewArticle, token: string) => async (dispatch: appDispatch) => {
+    const res = await changeData<IArticle>(
+        () => api.createArticle(articleData, token),
+        dispatch,
+        {
             setError: setArticle,
-            setIsLoading,
-        });
+        },
+        true
+    );
+    return res;
+};
+
+export const updateArticle =
+    (articleData: INewArticle, token: string, slug: string) => async (dispatch: appDispatch) => {
+        const res = await changeData<IArticle>(
+            () => api.updateArticle(articleData, token, slug),
+            dispatch,
+            {
+                setError: setArticle,
+            },
+            true
+        );
+        return res;
     };
 
 export const deleteArticle = (token: string, slug: string) => async (dispatch: appDispatch) => {
-    const res = await changeData(() => api.deleteArticle(token, slug), dispatch, {
-        setData: () => setArticle({ article: null, isDeleted: true }),
-        setError: setArticle,
-    });
+    const res = await changeData(
+        () => api.deleteArticle(token, slug),
+        dispatch,
+        {
+            setError: setArticle,
+        },
+        true
+    );
     return res;
 };
 
 export const favoriteArticle = (token: string, slug: string, index?: number) => async (dispatch: appDispatch) => {
-    const res = await changeData(() => api.favoriteArticle(token, slug), dispatch, {
-        setData:
-            index === undefined
-                ? (article: IArticle) => setArticle({ article })
-                : (article: IArticle) => setListOfArticles({ article, index }),
-    });
+    const res = await like(api.favoriteArticle, dispatch, token, slug, index);
     return res;
 };
 
 export const unfavoriteArticle = (token: string, slug: string, index?: number) => async (dispatch: appDispatch) => {
-    const res = await changeData(() => api.unfavoriteArticle(token, slug), dispatch, {
-        setData:
-            index === undefined
-                ? (article: IArticle) => setArticle({ article })
-                : (article: IArticle) => setListOfArticles({ article, index }),
-    });
+    const res = await like(api.unfavoriteArticle, dispatch, token, slug, index);
     return res;
 };
 
-async function changeData(
+async function like(
+    apiMethod: (t: string, s: string) => Promise<IArticle>,
+    dispatch: appDispatch,
+    token: string,
+    slug: string,
+    index?: number
+) {
+    const { setData, setError } =
+        index === undefined
+            ? {
+                  setData: (article: IArticle) => setArticle({ article }),
+                  setError: setArticle,
+              }
+            : {
+                  setData: (article: IArticle) => setListOfArticles({ article, index }),
+                  setError: setListOfArticles,
+              };
+    const res = await changeData(() => apiMethod(token, slug), dispatch, {
+        setData,
+        setError,
+    });
+    return res;
+}
+
+type fetchDataActionsType =
+    | {
+          setData: ActionCreator<unknown>;
+          setError?: ActionCreator<unknown>;
+      }
+    | {
+          setData?: ActionCreator<unknown>;
+          setError: ActionCreator<unknown>;
+      };
+
+async function changeData<T>(
     fetch: () => Promise<unknown>,
     dispatch: appDispatch,
-    actions: {
-        setData: ActionCreator<unknown>;
-        setError?: ActionCreator<unknown>;
-        setIsLoading?: ActionCreator<unknown>;
-    }
+    actions: fetchDataActionsType,
+    isNeedLoading?: boolean
 ) {
-    const res = await fetchData(fetch, dispatch, actions, [{ error: UnauthorizedError, message: 'unauthorizedError' }]);
+    const res = await fetchData<T>(
+        fetch,
+        dispatch,
+        actions,
+        [{ error: UnauthorizedError, message: 'unauthorizedError' }],
+        isNeedLoading
+    );
     return res;
 }
 
@@ -81,45 +120,42 @@ async function getData(
     actions: {
         setData: ActionCreator<unknown>;
         setError?: ActionCreator<unknown>;
-        setIsLoading?: ActionCreator<unknown>;
-    }
+    },
+    isNeedLoading?: boolean
 ) {
-    await fetchData(fetch, dispatch, actions, [{ error: NotFoundError, message: 'notFoundError' }]);
+    await fetchData(fetch, dispatch, actions, [{ error: NotFoundError, message: 'notFoundError' }], isNeedLoading);
 }
 
-async function fetchData(
+async function fetchData<T>(
     fetch: () => Promise<unknown>,
     dispatch: appDispatch,
-    actions: {
-        setData: ActionCreator<unknown>;
-        setError?: ActionCreator<unknown>;
-        setIsLoading?: ActionCreator<unknown>;
-    },
-    errors: { error: typeof FetchError; message: string }[]
-) {
-    const dispatchAction = bindActionCreators(actions, dispatch);
+    actions: fetchDataActionsType,
+    errors: { error: typeof FetchError; message: string }[],
+    isNeedLoading?: boolean
+): Promise<T | false> {
+    let {
+        setData,
+        setError,
+        setIsLoading: bindSetIsLoading,
+    } = bindActionCreators({ ...actions, setIsLoading }, dispatch);
 
-    if (!dispatchAction.setError) dispatchAction.setError = dispatchAction.setData;
-
-    if (dispatchAction.setIsLoading) dispatchAction.setIsLoading(true);
+    if (isNeedLoading) bindSetIsLoading(true);
 
     try {
         const data = await fetch();
-        dispatchAction.setData(data);
-        return true;
+        if (setData) setData(data);
+        return data as T;
     } catch (err) {
         let isFindErr = false;
-        // eslint-disable-next-line no-restricted-syntax
-        for (const { error, message } of errors) {
-            if (err instanceof error) {
-                dispatchAction.setError({ hasError: message });
-                isFindErr = true;
-            }
+        if (!setError) setError = setData;
+        const findErr = errors.find(({ error }) => err instanceof error);
+        if (findErr && setError) {
+            setError({ hasError: findErr.message });
+            isFindErr = true;
         }
-        if (!isFindErr)
-            dispatchAction.setError({ hasError: err instanceof ServerError ? 'serverError' : 'fetchError' });
+        if (!isFindErr && setError) setError({ hasError: err instanceof ServerError ? 'serverError' : 'fetchError' });
         return false;
     } finally {
-        if (dispatchAction.setIsLoading) dispatchAction.setIsLoading(false);
+        if (isNeedLoading) bindSetIsLoading(false);
     }
 }

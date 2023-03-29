@@ -11,14 +11,17 @@ import Alert from '../../Alert';
 import type { storeType } from '../../../type';
 import useSideContents from '../../../utils/hooks/useSideContent';
 import { alertMessage, alertType } from '../../../utils/helpers/alert.helpers';
+import useReload from '../../../utils/hooks/useReload';
 
 export default function FullArticle() {
-    const { hasError, isDeleted } = useSelector((state: storeType) => state.article);
+    const { hasError } = useSelector((state: storeType) => state.article);
     const history = useHistory();
     const linkSlug = history.location.pathname
         .split('/')
         .filter((el) => el !== '')
         .at(-1) as string;
+
+    const { reload } = useReload();
 
     const article = useArticle(linkSlug);
 
@@ -33,8 +36,9 @@ export default function FullArticle() {
         },
         other: [
             {
-                check: isDeleted,
-                component: <Alert message={alertMessage.successful('Deleting an article')} type='success' />,
+                check: reload === 'done',
+                component: <Alert message='deleting an article' type='success' />,
+                priority: 'notFoundError',
             },
             {
                 check: !article || Object.keys(article).length === 0,
@@ -45,11 +49,16 @@ export default function FullArticle() {
     if (sideContent) return sideContent;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const { body, title, tagList, createdAt, description, author } = article!;
+    const { body, title, tagList, createdAt, description, author, favoritesCount, favorited } = article!;
     const text = body ? body.replace(/\\n/gi, '\n &nbsp;') : '';
 
     return (
-        <ArticleCard data={{ title, tagList, createdAt, description, author }} slug={linkSlug}>
+        <ArticleCard
+            data={{ title, tagList, createdAt, description, author }}
+            slug={linkSlug}
+            favoritesCount={favoritesCount}
+            favorited={favorited}
+        >
             <ReactMarkdown className='article__body' remarkPlugins={[remarkGfm]}>
                 {text}
             </ReactMarkdown>

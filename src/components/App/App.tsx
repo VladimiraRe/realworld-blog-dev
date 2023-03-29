@@ -29,7 +29,7 @@ export default function App({ token }: IApp) {
     if (hasError && hasError[0] === networkError)
         return <Container component={<Alert message={alertMessage.networkError} type='error' />} />;
 
-    if (token && !loggedIn) return <Container component={<Loading />} />;
+    if (token && loggedIn === null) return <Container component={<Loading />} />;
 
     return (
         <div className='app'>

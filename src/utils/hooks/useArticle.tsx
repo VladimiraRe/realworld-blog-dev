@@ -6,7 +6,7 @@ import { getArticle, setArticle, setIsLoading } from '../../store/action';
 
 export default function useArticle(linkSlug: string) {
     const { article, hasError, isDeleted } = useSelector((state: storeType) => state.article);
-    const token = useSelector((state: storeType) => state.user.loggedIn?.token);
+    const { token } = useSelector((state: storeType) => state.user.loggedIn || { token: undefined });
     const isLoading = useSelector((state: storeType) => state.isLoading);
     const dispatch: appDispatch = useDispatch();
 

@@ -8,7 +8,7 @@ export default function useArticlesList(page: number, pageSize: number) {
     const LIMIT = 25;
 
     const { articles, offset, hasError } = useSelector((state: storeType) => state.listOfArticles);
-    const token = useSelector((state: storeType) => state.user.loggedIn?.token);
+    const { token } = useSelector((state: storeType) => state.user.loggedIn || { token: undefined });
     const dispatch: appDispatch = useDispatch();
 
     useEffect(() => {
@@ -16,7 +16,7 @@ export default function useArticlesList(page: number, pageSize: number) {
         checkData(page, pageSize, LIMIT, offset, dispatch, token);
     }, [page, pageSize, LIMIT, offset, dispatch, hasError, token]);
 
-    if (hasError) return hasError as alertMessageKeysType;
+    if (hasError) return { hasError: hasError as alertMessageKeysType };
 
     if (offset === null || articles === null) return null;
 

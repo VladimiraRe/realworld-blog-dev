@@ -2,7 +2,7 @@ import type { actionsType, IUser } from '../../../type';
 
 interface IUserState {
     isRegistered: boolean;
-    loggedIn: IUser | null;
+    loggedIn: IUser | null | false;
     hasError: string | null;
 }
 

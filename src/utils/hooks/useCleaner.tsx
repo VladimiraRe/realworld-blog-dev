@@ -6,7 +6,8 @@ import type { appDispatch, storeType, actionsType } from '../../type';
 
 interface IUseCleaner {
     check: boolean;
-    action: () => actionsType;
+    action?: () => actionsType;
+    other?: () => void;
 }
 
 export default function useCleaner(props: IUseCleaner[]) {
@@ -16,8 +17,9 @@ export default function useCleaner(props: IUseCleaner[]) {
     useEffect(
         () => () => {
             if (isLoading) dispatch(setIsLoading(false));
-            props.forEach((el) => {
-                if (el.check) dispatch(el.action());
+            props.forEach(({ check, action, other }) => {
+                if (check && action) dispatch(action());
+                if (check && other) other();
             });
         },
         [dispatch, isLoading, props]

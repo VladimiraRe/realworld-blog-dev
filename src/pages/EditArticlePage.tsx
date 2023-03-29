@@ -6,14 +6,14 @@ import ArticleForm from '../components/Form/ArticleForm';
 import Container from '../containers/Container';
 import Alert from '../components/Alert';
 import useArticle from '../utils/hooks/useArticle';
-import { updateArtile } from '../store/action';
+import { updateArticle } from '../store/action';
 import useSideContents from '../utils/hooks/useSideContent';
 import getErrorMessage from '../utils/hooks/getErrorMessage';
 import { alertMessage, alertType } from '../utils/helpers/alert.helpers';
 
 export default function EditArticlePage() {
     const { loggedIn } = useSelector((state: storeType) => state.user);
-    const { hasError, isChanged } = useSelector((state: storeType) => state.article);
+    const { hasError } = useSelector((state: storeType) => state.article);
 
     const history = useHistory();
     const linkSlug = history.location.pathname
@@ -48,11 +48,7 @@ export default function EditArticlePage() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const { title, description, body, tagList, slug } = article!;
 
-    const action = (articleData: INewArticle, token: string) => updateArtile(articleData, token, slug);
+    const action = (articleData: INewArticle, token: string) => updateArticle(articleData, token, slug);
 
-    return (
-        <Container
-            component={<ArticleForm values={{ title, description, body, tagList }} check={isChanged} action={action} />}
-        />
-    );
+    return <Container component={<ArticleForm values={{ title, description, body, tagList }} action={action} />} />;
 }

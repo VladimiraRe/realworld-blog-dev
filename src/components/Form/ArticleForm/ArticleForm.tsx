@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Input } from 'antd';
 
 import useSideContents from '../../../utils/hooks/useSideContent';
-import { setArticle } from '../../../store/action';
-import type { appDispatch, INewArticle, storeType } from '../../../type';
+import { setArticle, setIsLoading } from '../../../store/action';
+import type { appDispatch, IArticle, INewArticle, storeType } from '../../../type';
 import DynamicForm from '../DynamicForm';
 import Form from '../Form';
 import FormItem from '../FormItem';
@@ -15,32 +15,38 @@ import './ArticleForm.scss';
 import getErrorMessage from '../../../utils/hooks/getErrorMessage';
 import Container from '../../../containers/Container';
 import { alertMessage } from '../../../utils/helpers/alert.helpers';
+import useCleaner from '../../../utils/hooks/useCleaner';
 
 interface IArticleForm {
-    action: (articleData: INewArticle, token: string) => (dispatch: appDispatch) => Promise<void>;
-    check: boolean;
+    action: (articleData: INewArticle, token: string) => (dispatch: appDispatch) => Promise<IArticle | false>;
     values?: { tagList: string[]; [key: string]: string | string[] };
 }
 
 export const articleFormNames = ['title', 'description', 'body', 'tagList'] as const;
 
-export default function ArticleForm({ action, check, values }: IArticleForm) {
-    const { token } = useSelector((state: storeType) => state.user.loggedIn!);
-    const { article, hasError, isCreated, isChanged } = useSelector((state: storeType) => state.article);
+export default function ArticleForm({ action, values }: IArticleForm) {
+    const { token } = useSelector((state: storeType) => state.user.loggedIn || { token: undefined });
+    const { hasError } = useSelector((state: storeType) => state.article);
+    const isLoading = useSelector((state: storeType) => state.isLoading);
+
     const dispatch: appDispatch = useDispatch();
     const history = useHistory();
 
+    const [isReload, setIsReload] = useState(false);
+
+    useCleaner([
+        { check: !!hasError, action: () => setArticle({ hasError: null }) },
+        { check: isLoading, action: () => setIsLoading(false) },
+        { check: !!(sessionStorage.getItem('slug') && !isReload), other: () => sessionStorage.removeItem('slug') },
+    ]);
+
     useLayoutEffect(() => {
-        if (check && article?.slug) {
-            sessionStorage.setItem('isNeedReloading', 'true');
-            history.push(`/articles/${article?.slug}`);
+        const slug = sessionStorage.getItem('slug');
+        if (slug) {
+            sessionStorage.removeItem('slug');
+            history.push(`/articles/${slug}`);
         }
-        return () => {
-            if (hasError) setArticle({ hasError: null });
-            if (isCreated) setArticle({ isCreated: false });
-            if (isChanged) setArticle({ isChanged: false });
-        };
-    }, [check, article, history, hasError, isCreated, isChanged]);
+    }, [history]);
 
     const sideContent = useSideContents({
         error: {
@@ -51,6 +57,7 @@ export default function ArticleForm({ action, check, values }: IArticleForm) {
                     ['serverError', alertMessage.serverError],
                 ]),
         },
+        withoutLoading: true,
     });
     if (sideContent) return <Container component={sideContent} />;
 
@@ -63,13 +70,24 @@ export default function ArticleForm({ action, check, values }: IArticleForm) {
         name === 'tagList' ? (initial.tagList = tagList) : (initial[name] = values ? values[name] : null);
     });
 
+    const onFinish = async (articleData: INewArticle) => {
+        const res = await dispatch(action(articleData, token as string));
+        if (res && !hasError) {
+            setIsReload(true);
+            sessionStorage.setItem('slug', `${res.slug}`);
+            window.location.reload();
+        }
+    };
+
     return (
         <div className='articleForm'>
             <Form
                 title='create new article'
                 btnText='send'
                 initial={initial}
-                onFinish={(articleData: INewArticle) => dispatch(action(articleData, token as string))}
+                onFinish={onFinish}
+                loading={isLoading}
+                disabled={isLoading}
             >
                 <FormItem
                     name={names[0]}

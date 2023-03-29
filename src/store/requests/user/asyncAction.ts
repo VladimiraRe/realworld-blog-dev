@@ -18,7 +18,8 @@ export const registerNewUser =
             {
                 error: ReservedError,
                 message: 'reservedError',
-            }
+            },
+            true
         );
     };
 
@@ -91,7 +92,8 @@ async function userAction<T>(
     dispatch: appDispatch,
     action: (res: T) => actionsType,
     method: () => Promise<T>,
-    errors: userActionErrorsType
+    errors: userActionErrorsType,
+    withoutChangesLoggedIn?: boolean
 ) {
     const boundActions = bindActionCreators({ action, setUserError, setIsLoading }, dispatch);
 
@@ -102,7 +104,9 @@ async function userAction<T>(
         boundActions.action(res);
         return res;
     } catch (err) {
-        return handleError(err, errors, boundActions.setUserError);
+        handleError(err, errors, boundActions.setUserError);
+        if (!withoutChangesLoggedIn) dispatch(setLoggedIn(false));
+        return false;
     } finally {
         boundActions.setIsLoading(false);
     }

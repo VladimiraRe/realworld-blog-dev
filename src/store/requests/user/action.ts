@@ -1,6 +1,6 @@
 import type { IUser } from '../../../type';
 
-export const setLoggedIn = (user: IUser | null) => ({
+export const setLoggedIn = (user: IUser | null | false) => ({
     type: 'SET_LOGGED_IN' as const,
     user,
 });
