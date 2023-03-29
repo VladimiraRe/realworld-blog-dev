@@ -20,7 +20,7 @@ export default function LoggedIn({ loggedIn }: ILogin) {
 
     const logOut = () => {
         document.cookie = 'token=""; max-age=0';
-        dispatch(setLoggedIn(null));
+        dispatch(setLoggedIn(false));
     };
 
     return (
