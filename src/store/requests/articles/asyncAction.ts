@@ -55,23 +55,17 @@ export const deleteArticle = (token: string, slug: string) => async (dispatch: a
 };
 
 export const favoriteArticle = (token: string, slug: string, index?: number) => async (dispatch: appDispatch) => {
-    const res = await like(api.favoriteArticle, dispatch, token, slug, index);
+    const res = await like(() => api.favoriteArticle(token, slug), dispatch, index);
     return res;
 };
 
 export const unfavoriteArticle = (token: string, slug: string, index?: number) => async (dispatch: appDispatch) => {
-    const res = await like(api.unfavoriteArticle, dispatch, token, slug, index);
+    const res = await like(() => api.unfavoriteArticle(token, slug), dispatch, index);
     return res;
 };
 
-async function like(
-    apiMethod: (t: string, s: string) => Promise<IArticle>,
-    dispatch: appDispatch,
-    token: string,
-    slug: string,
-    index?: number
-) {
-    const { setData, setError } =
+async function like(apiMethod: () => Promise<IArticle>, dispatch: appDispatch, index?: number) {
+    const setters =
         index === undefined
             ? {
                   setData: (article: IArticle) => setArticle({ article }),
@@ -81,10 +75,7 @@ async function like(
                   setData: (article: IArticle) => setListOfArticles({ article, index }),
                   setError: setListOfArticles,
               };
-    const res = await changeData(() => apiMethod(token, slug), dispatch, {
-        setData,
-        setError,
-    });
+    const res = await changeData(apiMethod, dispatch, setters);
     return res;
 }
 

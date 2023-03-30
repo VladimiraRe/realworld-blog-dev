@@ -53,18 +53,12 @@ export default function ArticlesList({ page, pageSize }: IArticlesList) {
     };
 
     const articlesItems = data.cutArticles?.map(({ slug, ...article }, inx) => {
-        let { createdAt, favoritesCount, favorited } = article;
+        let { createdAt } = article;
         createdAt = format(new Date(createdAt), 'PP');
         return (
             <li key={uuidv1()}>
                 <div role='presentation' onClick={() => onClick(slug)}>
-                    <ArticleCard
-                        data={{ ...article, createdAt }}
-                        slug={slug}
-                        favoritesCount={favoritesCount}
-                        favorited={favorited}
-                        inx={(data.startInx as number) + inx}
-                    />
+                    <ArticleCard data={{ ...article, createdAt }} slug={slug} inx={(data.startInx as number) + inx} />
                 </div>
             </li>
         );

@@ -49,16 +49,11 @@ export default function FullArticle() {
     if (sideContent) return sideContent;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const { body, title, tagList, createdAt, description, author, favoritesCount, favorited } = article!;
+    const { body, title, tagList, createdAt, description, author } = article!;
     const text = body ? body.replace(/\\n/gi, '\n &nbsp;') : '';
 
     return (
-        <ArticleCard
-            data={{ title, tagList, createdAt, description, author }}
-            slug={linkSlug}
-            favoritesCount={favoritesCount}
-            favorited={favorited}
-        >
+        <ArticleCard data={{ title, tagList, createdAt, description, author }} slug={linkSlug}>
             <ReactMarkdown className='article__body' remarkPlugins={[remarkGfm]}>
                 {text}
             </ReactMarkdown>

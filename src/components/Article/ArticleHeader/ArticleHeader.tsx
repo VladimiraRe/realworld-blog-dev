@@ -11,12 +11,10 @@ import Likes from '../../Likes';
 interface IArticleHeader {
     data: Omit<Omit<IArticleCard, 'favoritesCount'>, 'favorited'>;
     slug: string;
-    favoritesCount: number;
-    favorited: boolean;
     inx?: number;
 }
 
-export default function ArticleHeader({ data, slug, favoritesCount, favorited, inx }: IArticleHeader) {
+export default function ArticleHeader({ data, slug, inx }: IArticleHeader) {
     const { title, tagList, createdAt, description, author } = data;
     const isPage = inx === undefined;
     const className = ['article__header'];
@@ -42,7 +40,7 @@ export default function ArticleHeader({ data, slug, favoritesCount, favorited, i
             <div>
                 <div className='article__titleWrap'>
                     <h5>{shortTitle || title}</h5>
-                    <Likes slug={slug} favoritesCount={favoritesCount} favorited={favorited} inx={inx} />
+                    <Likes slug={slug} inx={inx} />
                 </div>
                 <div className='article__tags'>
                     {tags}
