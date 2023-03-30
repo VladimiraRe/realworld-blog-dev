@@ -1,4 +1,6 @@
+import { useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import type { storeType } from '../type';
 import ArticleForm from '../components/Form/ArticleForm';
@@ -12,6 +14,15 @@ import { alertMessage } from '../utils/helpers/alert.helpers';
 export default function CreateArticlePage() {
     const { loggedIn } = useSelector((state: storeType) => state.user);
     const { hasError } = useSelector((state: storeType) => state.article);
+    const history = useHistory();
+
+    useLayoutEffect(() => {
+        const slug = sessionStorage.getItem('slug');
+        if (slug) {
+            sessionStorage.removeItem('slug');
+            history.push(`/articles/${slug}`);
+        }
+    }, [history]);
 
     const sideContent = useSideContents({
         error: {
