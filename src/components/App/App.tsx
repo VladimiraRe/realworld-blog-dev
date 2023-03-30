@@ -10,26 +10,19 @@ import RegistrationPage from '../../pages/RegistrationPage';
 import LoginPage from '../../pages/LoginPage';
 import EditProfilePage from '../../pages/EditProfilePage';
 import Alert from '../Alert';
-import useNetworkError, { networkError } from '../../errors/useNetworkError';
+import useNetworkError from '../../errors/useNetworkError';
 import CreateArticlePage from '../../pages/CreateArticlePage';
 import EditArticlePage from '../../pages/EditArticlePage';
-import Loading from '../Loading';
 import { alertMessage, alertType } from '../../utils/helpers/alert.helpers';
+import useFirstLoading from '../../utils/hooks/useFirstLoading';
 
-interface IApp {
-    token: string;
-}
-
-export default function App({ token }: IApp) {
+export default function App() {
     const { loggedIn } = useSelector((state: storeType) => state.user);
-    const hasError = useSelector((state: storeType) => state.hasError);
+    const firstLoading = useFirstLoading();
+    const networkError = useNetworkError();
 
-    useNetworkError();
-
-    if (hasError && hasError[0] === networkError)
-        return <Container component={<Alert message={alertMessage.networkError} type='error' />} />;
-
-    if (token && loggedIn === null) return <Container component={<Loading />} />;
+    if (firstLoading) return firstLoading;
+    if (networkError) return networkError;
 
     return (
         <div className='app'>

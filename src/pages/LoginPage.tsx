@@ -20,26 +20,26 @@ interface IState extends IInitial {
 
 export default function LoginPage() {
     const { hasError } = useSelector((state: storeType) => state.user);
+    const isLoading = useSelector((state: storeType) => state.isLoading);
     const dispatch: appDispatch = useDispatch();
+
     const [form] = useForm();
     const prevValues = useRef({ email: null, password: null } as IState);
 
     const [isInvalidDataError, setIsInvalidDataError] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (hasError === 'invalidDataError' && !isInvalidDataError) {
             setIsInvalidDataError(true);
         }
         if (isInvalidDataError) {
-            setIsLoading(false);
             form.validateFields();
         }
     }, [hasError, form, isInvalidDataError]);
 
     useCleaner([{ check: !!hasError, action: () => setUserError(null) }]);
 
-    if (hasError && !isInvalidDataError) {
+    if (hasError && hasError !== 'invalidDataError') {
         const { text, type } = getErrorMessage(hasError, [
             ['unauthorizedError', alertMessage.loginError],
             ['serverError', alertMessage.serverError],
@@ -67,7 +67,6 @@ export default function LoginPage() {
                 onFinish={(values: ILogin) => {
                     prevValues.current = values as IState;
                     setIsInvalidDataError(false);
-                    setIsLoading(true);
                     dispatch(login(values));
                 }}
                 form={form}
