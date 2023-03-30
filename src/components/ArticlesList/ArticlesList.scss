@@ -1,3 +1,6 @@
 .articlesList > li:not(:last-child) {
     margin-bottom: 26px;
 }
+.articlesList > li > div[role=presentation] {
+    cursor: pointer;
+}
