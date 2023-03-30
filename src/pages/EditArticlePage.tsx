@@ -1,3 +1,4 @@
+import { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -14,12 +15,22 @@ import { alertMessage, alertType } from '../utils/helpers/alert.helpers';
 export default function EditArticlePage() {
     const { loggedIn } = useSelector((state: storeType) => state.user);
     const { hasError } = useSelector((state: storeType) => state.article);
-
     const history = useHistory();
+
+    useLayoutEffect(() => {
+        const slug = sessionStorage.getItem('slug');
+        if (slug) {
+            sessionStorage.removeItem('slug');
+            history.push(`/articles/${slug}`);
+        }
+    }, [history]);
+
     const linkSlug = history.location.pathname
         .split('/')
         .filter((el) => el !== '')
         .at(-2) as string;
+
+    const [isFormLoading, setIsFormLoading] = useState(false);
 
     const article = useArticle(linkSlug);
 
@@ -42,6 +53,8 @@ export default function EditArticlePage() {
                 component: <Alert message={alertMessage.notFoundError.article} type={alertType.warning} />,
             },
         ],
+        withoutLoading: true,
+        checkForLoading: isFormLoading,
     });
     if (sideContent) return <Container component={sideContent} />;
 
@@ -50,5 +63,15 @@ export default function EditArticlePage() {
 
     const action = (articleData: INewArticle, token: string) => updateArticle(articleData, token, slug);
 
-    return <Container component={<ArticleForm values={{ title, description, body, tagList }} action={action} />} />;
+    return (
+        <Container
+            component={
+                <ArticleForm
+                    values={{ title, description, body, tagList }}
+                    action={action}
+                    onLoading={() => setIsFormLoading(true)}
+                />
+            }
+        />
+    );
 }

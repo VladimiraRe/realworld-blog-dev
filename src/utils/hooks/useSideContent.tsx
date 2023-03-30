@@ -19,12 +19,13 @@ export interface IUseSideContents {
     };
     other?: IOther[];
     withoutLoading?: boolean;
+    checkForLoading?: boolean;
 }
 
-export default function useSideContents({ error, other, withoutLoading }: IUseSideContents) {
+export default function useSideContents({ error, other, withoutLoading, checkForLoading }: IUseSideContents) {
     const isLoading = useSelector((state: storeType) => state.isLoading);
 
-    if (isLoading && !withoutLoading) return <Loading />;
+    if (isLoading && !withoutLoading && !checkForLoading) return <Loading />;
 
     let err;
     if (error.hasError) {

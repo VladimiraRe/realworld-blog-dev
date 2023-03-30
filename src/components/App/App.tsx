@@ -14,15 +14,16 @@ import useNetworkError from '../../errors/useNetworkError';
 import CreateArticlePage from '../../pages/CreateArticlePage';
 import EditArticlePage from '../../pages/EditArticlePage';
 import { alertMessage, alertType } from '../../utils/helpers/alert.helpers';
-import useFirstLoading from '../../utils/hooks/useFirstLoading';
+import getCookie from '../../utils/hooks/getCookie';
+import Loading from '../Loading';
 
 export default function App() {
     const { loggedIn } = useSelector((state: storeType) => state.user);
-    const firstLoading = useFirstLoading();
     const networkError = useNetworkError();
+    const { token } = getCookie();
 
-    if (firstLoading) return firstLoading;
     if (networkError) return networkError;
+    if (token && loggedIn === null) return <Container component={<Loading />} />;
 
     return (
         <div className='app'>

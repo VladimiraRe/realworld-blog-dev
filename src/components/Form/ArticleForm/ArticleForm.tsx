@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useLayoutEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { Input } from 'antd';
 
 import useSideContents from '../../../utils/hooks/useSideContent';
@@ -20,17 +19,17 @@ import useCleaner from '../../../utils/hooks/useCleaner';
 interface IArticleForm {
     action: (articleData: INewArticle, token: string) => (dispatch: appDispatch) => Promise<IArticle | false>;
     values?: { tagList: string[]; [key: string]: string | string[] };
+    onLoading?: () => void;
 }
 
 export const articleFormNames = ['title', 'description', 'body', 'tagList'] as const;
 
-export default function ArticleForm({ action, values }: IArticleForm) {
+export default function ArticleForm({ action, values, onLoading }: IArticleForm) {
     const { token } = useSelector((state: storeType) => state.user.loggedIn || { token: undefined });
     const { hasError } = useSelector((state: storeType) => state.article);
     const isLoading = useSelector((state: storeType) => state.isLoading);
 
     const dispatch: appDispatch = useDispatch();
-    const history = useHistory();
 
     const [isReload, setIsReload] = useState(false);
 
@@ -39,14 +38,6 @@ export default function ArticleForm({ action, values }: IArticleForm) {
         { check: isLoading, action: () => setIsLoading(false) },
         { check: !!(sessionStorage.getItem('slug') && !isReload), other: () => sessionStorage.removeItem('slug') },
     ]);
-
-    useLayoutEffect(() => {
-        const slug = sessionStorage.getItem('slug');
-        if (slug) {
-            sessionStorage.removeItem('slug');
-            history.push(`/articles/${slug}`);
-        }
-    }, [history]);
 
     const sideContent = useSideContents({
         error: {
@@ -71,6 +62,7 @@ export default function ArticleForm({ action, values }: IArticleForm) {
     });
 
     const onFinish = async (articleData: INewArticle) => {
+        if (onLoading) onLoading();
         const res = await dispatch(action(articleData, token as string));
         if (res && !hasError) {
             setIsReload(true);

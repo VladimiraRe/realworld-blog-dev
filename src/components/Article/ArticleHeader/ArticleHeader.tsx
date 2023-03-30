@@ -18,13 +18,13 @@ interface IArticleHeader {
 
 export default function ArticleHeader({ data, slug, favoritesCount, favorited, inx }: IArticleHeader) {
     const { title, tagList, createdAt, description, author } = data;
-
+    const isPage = inx === undefined;
     const className = ['article__header'];
 
     let maxTag = 11;
     let shortTitle: string | null = null;
     let shortDescription: string | null = null;
-    if (inx) {
+    if (!isPage) {
         className.push('article__header--preview');
         maxTag = 4;
         shortTitle = checkLength(title, 20);
@@ -32,7 +32,7 @@ export default function ArticleHeader({ data, slug, favoritesCount, favorited, i
     }
 
     const tags = tagList.slice(0, maxTag).map((tag) => {
-        return <Tag key={uuidv1()}>{!inx ? checkLength(tag, 30) : checkLength(tag, 10)}</Tag>;
+        return <Tag key={uuidv1()}>{isPage ? checkLength(tag, 30) : checkLength(tag, 10)}</Tag>;
     });
 
     const date = format(new Date(createdAt), 'PPP');
@@ -54,7 +54,7 @@ export default function ArticleHeader({ data, slug, favoritesCount, favorited, i
                 <Author data={author}>
                     <span>{date}</span>
                 </Author>
-                {!inx && <ArticleBtns author={author.username} />}
+                {isPage && <ArticleBtns author={author.username} />}
             </div>
         </header>
     );
